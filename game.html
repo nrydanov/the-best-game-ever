@@ -1,0 +1,303 @@
+<html>
+<head>
+<script>
+var xDelta = 0;
+var yDelta = 0 ;
+var xPos = 0;
+var yPos = 0;
+function moveX() {
+
+
+if(xPos   != 0) {
+ xPos = xPos - xDelta;
+console.log(xPos);
+  document.getElementById("hero").style.left = parseInt(document.getElementById("hero").style.left) + xDelta +"px";
+}
+}
+function moveY() {
+
+
+
+if(yPos   != 0) {
+ yPos = yPos - yDelta;
+console.log(yPos);
+  document.getElementById("hero").style.bottom = parseInt(document.getElementById("hero").style.bottom) + yDelta +"px";
+}
+}
+
+document.addEventListener('keydown', function(event){
+    console.log('Key: ', event.key);
+    console.log('keyCode: ', event.keyCode);
+
+//nalevo
+if(event.keyCode == 37) {
+xPos = -100;
+xDelta = -2;
+}
+//napravo
+if(event.keyCode == 39) {
+xPos = 100;
+xDelta = 2;
+}
+//vverh
+if(event.keyCode == 38) {
+yPos = 100;
+yDelta = 2;
+}
+//vniz
+if(event.keyCode == 40) {
+yPos = -100;
+yDelta = -2;
+}
+
+
+class myObject {
+    id = "hero"
+    width =  "100px";
+    height =  "100px";
+    background-image =	"url(file:///C:/Users/stud/Desktop/game%20html/im/pers3.png)";
+    bottom =  "100px";
+    left =  "0px";
+    background-size =  "contain";
+    position =  "absolute";
+	type = "stone";
+	constructor(type) {
+		// stone
+		if(type = "stone") {
+		this.width =  100px;
+		this.height = 100px;
+		this.background-image =  url(file:///C:/Users/stud/Desktop/game%20html/im/floor.png);
+		this.bottom =  0px;
+		this.left =  0px;
+		this.background-size =  contain;
+		this.position =  absolute;
+	  }
+	}
+	myRender() {
+		var d=document.createElement('div');
+		d.style.width=this.width;
+		d.style.height=this.height;
+		d.style.background-size= this.background-size;
+		document.body.appendChild(d);
+  }
+	
+}
+
+
+}
+
+var stone =  new myObject("stone");
+var arr = [];
+arr.Push(stone);
+
+for(var i = 0; i < arr.length; i++) {
+ var temp = arr[i];
+ arr[i].myRender();
+}
+
+});
+var myIntervalX = setInterval(moveX, 5);
+var myIntervalY = setInterval(moveY, 5);
+
+</script>
+</head>
+<body style="
+    background-image: url(file:///C:/Users/stud/Desktop/game%20html/im/back.png);
+    width: 1590;
+    height: 530;
+    background-repeat: no-repeat;
+    background-size: cover;
+">
+<div id="hero" style="
+    width: 100px;
+    height: 100px;
+    background-image: url(file:///C:/Users/stud/Desktop/game%20html/im/pers3.png);
+    bottom: 100px;
+    left: 0px;
+    background-size: contain;
+    position: absolute;
+">
+</div>
+<div style="
+    width: 100px;
+    height: 100px;
+    background-image: url(file:///C:/Users/stud/Desktop/game%20html/im/floor.png);
+    bottom: 0px;
+    left: 0px;
+    background-size: contain;
+    position: absolute;
+">
+</div>
+<div style="
+    width: 100px;
+    height: 100px;
+    background-image: url(file:///C:/Users/stud/Desktop/game%20html/im/floor.png);
+    bottom: 0px;
+    left: 100px;
+    background-size: contain;
+    position: absolute;
+">
+</div>
+<div style="
+    width: 100px;
+    height: 100px;
+    background-image: url(file:///C:/Users/stud/Desktop/game%20html/im/floor.png);
+    bottom: 0px;
+    left: 200px;
+    background-size: contain;
+    position: absolute;
+">
+</div>
+<div style="
+    width: 100px;
+    height: 100px;
+    background-image: url(file:///C:/Users/stud/Desktop/game%20html/im/floor.png);
+    bottom: 0px;
+    left: 300px;
+    background-size: contain;
+    position: absolute;
+">
+</div>
+
+<div style="
+    width: 100px;
+    height: 100px;
+    background-image: url(file:///C:/Users/stud/Desktop/game%20html/im/floor.png);
+    bottom: 0px;
+    left: 400px;
+    background-size: contain;
+    position: absolute;
+">
+</div>
+<div style="
+    width: 100px;
+    height: 100px;
+    background-image: url(file:///C:/Users/stud/Desktop/game%20html/im/floor.png);
+    bottom: 0px;
+    left: 600px;
+    background-size: contain;
+    position: absolute;
+">
+</div>
+<div style="
+    width: 100px;
+    height: 100px;
+    background-image: url(file:///C:/Users/stud/Desktop/game%20html/im/floor.png);
+    bottom: 0px;
+    left: 700px;
+    background-size: contain;
+    position: absolute;
+">
+</div>
+<div style="
+    width: 100px;
+    height: 100px;
+    background-image: url(file:///C:/Users/stud/Desktop/game%20html/im/floor.png);
+    bottom: 0px;
+    left: 800px;
+    background-size: contain;
+    position: absolute;
+">
+</div>
+<div style="
+    width: 100px;
+    height: 100px;
+    background-image: url(file:///C:/Users/stud/Desktop/game%20html/im/floor.png);
+    bottom: 0px;
+    left: 900px;
+    background-size: contain;
+    position: absolute;
+">
+</div>
+<div style="
+    width: 100px;
+    height: 100px;
+    background-image: url(file:///C:/Users/stud/Desktop/game%20html/im/floor.png);
+    bottom: 0px;
+    left: 1000px;
+    background-size: contain;
+    position: absolute;
+">
+</div>
+<div style="
+    width: 100px;
+    height: 100px;
+    background-image: url(file:///C:/Users/stud/Desktop/game%20html/im/floor.png);
+    bottom: 0px;
+    left: 1100px;
+    background-size: contain;
+    position: absolute;
+">
+</div>
+<div style="
+    width: 100px;
+    height: 100px;
+    background-image: url(file:///C:/Users/stud/Desktop/game%20html/im/floor.png);
+    bottom: 0px;
+    left: 1200px;
+    background-size: contain;
+    position: absolute;
+">
+</div>
+<div style="
+    width: 100px;
+    height: 100px;
+    background-image: url(file:///C:/Users/stud/Desktop/game%20html/im/floor.png);
+    bottom: 0px;
+    left: 1300px;
+    background-size: contain;
+    position: absolute;
+">
+</div>
+<div style="
+    width: 100px;
+    height: 100px;
+    background-image: url(file:///C:/Users/stud/Desktop/game%20html/im/floor.png);
+    bottom: 0px;
+    left: 1400px;
+    background-size: contain;
+    position: absolute;
+">
+</div>
+<div style="
+    width: 100px;
+    height: 100px;
+    background-image: url(file:///C:/Users/stud/Desktop/game%20html/im/floor.png);
+    bottom: 0px;
+    left: 1500px;
+    background-size: contain;
+    position: absolute;
+">
+</div>
+<div style="
+    width: 165px;
+    height: 140px;
+    background-image: url(file:///C:/Users/stud/Desktop/game%20html/im/flag.png);
+    bottom: 100px;
+    left: 1400px;
+    background-size: contain;
+    position: absolute;
+"
+">
+</div>
+<div style="
+    width: 100px;
+    height: 100px;
+    background-image: url(file:///C:/Users/stud/Desktop/game%20html/im/spikes.png);
+    bottom: 0px;
+    left: 500px;
+    background-size: contain;
+    position: absolute;
+">
+</div>
+<div style="
+    width: 100px;
+    height: 100px;
+    background-image: url(file:///C:/Users/stud/Desktop/game%20html/im/spikes.png);
+    bottom: 100px;
+    left: 1000px;
+    background-size: contain;
+    position: absolute;
+">
+</div>
+</body></html>
