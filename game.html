@@ -1,295 +1,219 @@
 <html>
 <head>
-<script>
-var xDelta = 0;
-var yDelta = 0 ;
-var xPos = 0;
-var yPos = 0;
-function moveX() {
-    if(xPos != 0) {
-        xPos = xPos - xDelta;
-        console.log(xPos);
-        document.getElementById("hero").style.left = parseInt(document.getElementById("hero").style.left) + xDelta +"px";
-    }
-}
-function moveY() {
-    if (yPos != 0) {
-        yPos = yPos - yDelta;
-        console.log(yPos);
-        document.getElementById("hero").style.bottom = parseInt(document.getElementById("hero").style.bottom) + yDelta +"px";
-    }
-}
 
-document.addEventListener('keydown', function(event){
-    console.log('Key: ', event.key);
-    console.log('keyCode: ', event.keyCode);
-
-//nalevo
-if(event.keyCode == 37) {
-xPos = -100;
-xDelta = -2;
-}
-//napravo
-if(event.keyCode == 39) {
-xPos = 100;
-xDelta = 2;
-}
-//vverh
-if(event.keyCode == 38) {
-yPos = 100;
-yDelta = 2;
-}
-//vniz
-if(event.keyCode == 40) {
-yPos = -100;
-yDelta = -2;
-}
-
-
-class myObject {
-    id = "hero"
-    width =  "100px";
-    height =  "100px";
-    background_image = url("file:///Users/wrongway/Documents/dev/game/im/pers3.png");
-    bottom =  "100px";
-    left =  "0px";
-    background_size =  "contain";
-    position =  "absolute";
-	type = "stone";
-	constructor(type) {
-		// stone
-		if(type = "stone") {
-		this.width = "100px";
-		this.height = "100px";
-		this.background_image = url("file:///Users/wrongway/Documents/dev/game/im/floor.png");
-		this.bottom =  "0px";
-		this.left =  "0px";
-		this.background_size = "contain";
-		this.position = "absolute";
-	  }
-	}
-	myRender() {
-		var d = document.createElement('div');
-		d.style.width=this.width;
-		d.style.height=this.height;
-		d.style.background_size = this.background_xsize;
-		document.body.appendChild(d);
-  }
-	
-}
-
-var stone =  new myObject("stone");
-var arr = [];
-arr.Push(stone);
-
-for(var i = 0; i < arr.length; i++) {
-    var temp = arr[i];
-arr[i].myRender();
-}
-
-});
-var myIntervalX = setInterval(moveX, 5);
-var myIntervalY = setInterval(moveY, 5);
-
-</script>
 </head>
 <body style="
     background-image: url(file:///Users/wrongway/Documents/dev/game/im/back.png);
     width: 1590;
     height: 530;
-    background-repeat: no-repeat;
+    background-repeat: repeat;
     background-size: cover;
 ">
-<div id="hero" style="
-    width: 100px;
-    height: 100px;
-    background-image: url(file:///Users/wrongway/Documents/dev/game/im/pers3.png);
-    bottom: 100px;
-    left: 0px;
-    background-size: contain;
-    position: absolute;
-">
-</div>
-<div style="
-    width: 100px;
-    height: 100px;
-    background-image: url(file:///Users/wrongway/Documents/dev/game/im/floor.png);
-    bottom: 0px;
-    left: 0px;
-    background-size: contain;
-    position: absolute;
-">
-</div>
-<div style="
-    width: 100px;
-    height: 100px;
-    background-image: url(file:///Users/wrongway/Documents/dev/game/im/floor.png);
-    bottom: 0px;
-    left: 100px;
-    background-size: contain;
-    position: absolute;
-">
-</div>
-<div style="
-    width: 100px;
-    height: 100px;
-    background-image: url(file:///Users/wrongway/Documents/dev/game/im/floor.png);
-    bottom: 0px;
-    left: 200px;
-    background-size: contain;
-    position: absolute;
-">
-</div>
-<div style="
-    width: 100px;
-    height: 100px;
-    background-image: url(file:///Users/wrongway/Documents/dev/game/im/floor.png);
-    bottom: 0px;
-    left: 300px;
-    background-size: contain;
-    position: absolute;
-">
-</div>
 
-<div style="
-    width: 100px;
-    height: 100px;
-    background-image: url(file:///Users/wrongway/Documents/dev/game/im/floor.png);
-    bottom: 0px;
-    left: 400px;
-    background-size: contain;
-    position: absolute;
-">
-</div>
-<div style="
-    width: 100px;
-    height: 100px;
-    background-image: url(file:///Users/wrongway/Documents/dev/game/im/floor.png);
-    bottom: 0px;
-    left: 600px;
-    background-size: contain;
-    position: absolute;
-">
-</div>
-<div style="
-    width: 100px;
-    height: 100px;
-    background-image: url(file:///Users/wrongway/Documents/dev/game/im/floor.png);
-    bottom: 0px;
-    left: 700px;
-    background-size: contain;
-    position: absolute;
-">
-</div>
-<div style="
-    width: 100px;
-    height: 100px;
-    background-image: url(file:///Users/wrongway/Documents/dev/game/im/floor.png);
-    bottom: 0px;
-    left: 800px;
-    background-size: contain;
-    position: absolute;
-">
-</div>
-<div style="
-    width: 100px;
-    height: 100px;
-    background-image: url(file:///Users/wrongway/Documents/dev/game/im/floor.png);
-    bottom: 0px;
-    left: 900px;
-    background-size: contain;
-    position: absolute;
-">
-</div>
-<div style="
-    width: 100px;
-    height: 100px;
-    background-image: url(file:///Users/wrongway/Documents/dev/game/im/floor.png);
-    bottom: 0px;
-    left: 1000px;
-    background-size: contain;
-    position: absolute;
-">
-</div>
-<div style="
-    width: 100px;
-    height: 100px;
-    background-image: url(file:///Users/wrongway/Documents/dev/game/im/floor.png);
-    bottom: 0px;
-    left: 1100px;
-    background-size: contain;
-    position: absolute;
-">
-</div>
-<div style="
-    width: 100px;
-    height: 100px;
-    background-image: url(file:///Users/wrongway/Documents/dev/game/im/floor.png);
-    bottom: 0px;
-    left: 1200px;
-    background-size: contain;
-    position: absolute;
-">
-</div>
-<div style="
-    width: 100px;
-    height: 100px;
-    background-image: url(file:///Users/wrongway/Documents/dev/game/im/floor.png);
-    bottom: 0px;
-    left: 1300px;
-    background-size: contain;
-    position: absolute;
-">
-</div>
-<div style="
-    width: 100px;
-    height: 100px;
-    background-image: url(file:///Users/wrongway/Documents/dev/game/im/floor.png);
-    bottom: 0px;
-    left: 1400px;
-    background-size: contain;
-    position: absolute;
-">
-</div>
-<div style="
-    width: 100px;
-    height: 100px;
-    background-image: url(file:///Users/wrongway/Documents/dev/game/im/floor.png);
-    bottom: 0px;
-    left: 1500px;
-    background-size: contain;
-    position: absolute;
-">
-</div>
-<div style="
-    width: 165px;
-    height: 140px;
-    background-image: url(file:///Users/wrongway/Documents/dev/game/im/flag.png);
-    bottom: 100px;
-    left: 1400px;
-    background-size: contain;
-    position: absolute;
-"
-">
-</div>
-<div style="
-    width: 100px;
-    height: 100px;
-    background-image: url(file:///Users/wrongway/Documents/dev/game/im/spikes.png);
-    bottom: 0px;
-    left: 500px;
-    background-size: contain;
-    position: absolute;
-">
-</div>
-<div style="
-    width: 100px;
-    height: 100px;
-    background-image: url(file:///Users/wrongway/Documents/dev/game/im/spikes.png);
-    bottom: 100px;
-    left: 1000px;
-    background-size: contain;
-    position: absolute;
-">
-</div>
+<script>
+    var xDelta = 0;
+    var yDelta = 0;
+    var xPos = 0;
+    var yPos = 0;
+    
+    document.addEventListener('keydown', function(event) {
+        console.log('Key: ', event.key);
+        console.log('keyCode: ', event.keyCode);
+    
+        // Left
+        if (event.keyCode == 37) {
+            xPos = -100;
+            xDelta = -2;
+        }
+
+        // Right
+        if (event.keyCode == 39) {
+            xPos = 100;
+            xDelta = 2;
+        }
+
+        // Up
+        if (event.keyCode == 38) {
+            yPos = 100;
+            yDelta = 2;
+        }
+
+        // Down
+        if (event.keyCode == 40) {
+            yPos = -100;
+            yDelta = -2;
+        }
+    });
+    
+    class myObject {
+        constructor(type, bottom, left, backgroundSize="contain", position="absolute") {
+            this.type = type;
+            if (this.type == "stone") {
+                this.width = "100px";
+                this.height = "100px";
+                this.backgroundImage = "url(file:///Users/wrongway/Documents/dev/game/im/floor.png)";
+                this.bottom = bottom;
+                this.left = left;
+                this.backgroundSize = backgroundSize;
+                this.backgroundPosition = position;
+            } else if (this.type == "hero") {
+                this.width = "100px";
+                this.height = "100px";
+                this.backgroundImage = "url(file:///Users/wrongway/Documents/dev/game/im/pers3.png)";
+                this.bottom = bottom;
+                this.left = left;
+                this.backgroundSize = backgroundSize;
+                this.backgroundPosition = position;
+            } else if (this.type == "flag") {
+                this.width = "100px";
+                this.height = "100px";
+                this.backgroundImage = "url(file:///Users/wrongway/Documents/dev/game/im/flag.png)";
+                this.bottom = bottom;
+                this.left = left;
+                this.backgroundSize = backgroundSize;
+                this.backgroundPosition = position;
+            } else if (this.type == "spikes") {
+                this.width = "100px";
+                this.height = "100px";
+                this.backgroundImage = "url(file:///Users/wrongway/Documents/dev/game/im/spikes.png)";
+                this.bottom = bottom;
+                this.left = left;
+                this.backgroundSize = backgroundSize;
+                this.backgroundPosition = position;
+            }
+        }
+
+        // get x() {
+        //     return this.left;
+        // }
+
+        // set x(value) {
+        //     this.left = value; 
+        // }
+
+        // get y() {
+        //     return this.bottom;
+        // }
+
+        // set y(value) {
+        //     this.bottom = value; 
+        // }
+
+        // get type() {
+        //     return this.type;
+        // }
+
+        // set type(value) {
+        //     this.type = value; 
+        // }
+
+        // get height() {
+        //     return this.height;
+        // }
+
+        // set height(value) {
+        //     this.height = value; 
+        // }
+
+        // get width() {
+        //     return this.width;
+        // }
+
+        // set width(value) {
+        //     this.width = value; 
+        // }
+
+        myRender() {
+            var d = document.createElement('div');
+            d.style.width = this.width;
+            d.style.height = this.height;
+            d.style.backgroundSize = this.backgroundSize;
+            d.style.backgroundImage = this.backgroundImage;
+            d.style.bottom = this.bottom;
+            d.style.left = this.left;
+            d.style.position = this.backgroundPosition;
+            if (this.type == "hero") {
+                d.setAttribute('id', 'hero');
+            }
+            document.body.appendChild(d);
+        }  
+    }
+
+    var arr = [];
+
+    for (var i = 0; i < 1600; i += 100) {
+        var stone = new myObject("stone", "0px", i + "px");
+        if (i == 500) {
+            continue;
+        }
+        arr.push(stone);  
+    }
+
+    var hero = new myObject("hero", "100px", "100px");
+    arr.push(hero);
+
+    var flag = new myObject("flag", "100px", "1300px");
+    arr.push(flag);
+
+    var spikes = new myObject("spikes", "0px", "500px");
+    arr.push(spikes);
+
+    var spikes = new myObject("spikes", "100px", "300px");
+    arr.push(spikes);
+
+    var stone = new myObject("stone", "200px", "300px");
+    arr.push(stone);
+
+    var stone = new myObject("stone", "200px", "500px");
+    arr.push(stone);
+
+    var stone = new myObject("stone", "300px", "700px");
+    arr.push(stone);
+
+    var spikes = new myObject("spikes", "100", "800px");
+    arr.push(spikes);
+    
+    var spikes = new myObject("spikes", "100", "900px");
+    arr.push(spikes);
+
+    var spikes = new myObject("spikes", "100", "1000px");
+    arr.push(spikes);
+
+    function moveX() {
+        if (xPos != 0) {
+            xPos = xPos - xDelta;
+            console.log(xPos);
+            document.getElementById("hero").style.left = parseInt(document.getElementById("hero").style.left) + xDelta + "px";
+        }
+    }
+
+    function moveY() {
+        if (yPos != 0) {
+            yPos = yPos - yDelta;
+            console.log(yPos);
+            document.getElementById("hero").style.bottom = parseInt(document.getElementById("hero").style.bottom) + yDelta + "px";
+        }
+    }
+
+    function collisionDetection() {
+        for (var c = 0; c < arr.length; c++) {
+            var obj = arr[i];
+            if (obj.type == "stone") {
+                if (xPos > obj.x() && xPos < obj.x() + obj.width && yPos > obj.y() && yPos < obj.y() + obj.height) {
+                    xPos += xDelta;
+                    yPos += yDelta;
+                }
+            }
+        }
+    }
+
+    for (var i = 0; i < arr.length; i++) {
+        var obj = arr[i];
+        obj.myRender();
+    }
+
+    var myIntervalX = setInterval(moveX, 5);
+    var myIntervalY = setInterval(moveY, 5);
+    var myIntervalCollision = setInterval(collisionDetection, 5);
+    </script>
 </body></html>
