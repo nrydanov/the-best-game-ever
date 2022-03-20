@@ -1,7 +1,4 @@
 <html>
-<head>
-
-</head>
 <body style="
     background-image: url(file:///Users/wrongway/Documents/dev/game/im/back.png);
     width: 1590;
@@ -46,174 +43,161 @@
     });
     
     class myObject {
+
         constructor(type, bottom, left, backgroundSize="contain", position="absolute") {
             this.type = type;
-            if (this.type == "stone") {
-                this.width = "100px";
-                this.height = "100px";
-                this.backgroundImage = "url(file:///Users/wrongway/Documents/dev/game/im/floor.png)";
-                this.bottom = bottom;
-                this.left = left;
-                this.backgroundSize = backgroundSize;
-                this.backgroundPosition = position;
-            } else if (this.type == "hero") {
-                this.width = "100px";
-                this.height = "100px";
-                this.backgroundImage = "url(file:///Users/wrongway/Documents/dev/game/im/pers3.png)";
-                this.bottom = bottom;
-                this.left = left;
-                this.backgroundSize = backgroundSize;
-                this.backgroundPosition = position;
-            } else if (this.type == "flag") {
-                this.width = "100px";
-                this.height = "100px";
-                this.backgroundImage = "url(file:///Users/wrongway/Documents/dev/game/im/flag.png)";
-                this.bottom = bottom;
-                this.left = left;
-                this.backgroundSize = backgroundSize;
-                this.backgroundPosition = position;
-            } else if (this.type == "spikes") {
-                this.width = "100px";
-                this.height = "100px";
-                this.backgroundImage = "url(file:///Users/wrongway/Documents/dev/game/im/spikes.png)";
-                this.bottom = bottom;
-                this.left = left;
-                this.backgroundSize = backgroundSize;
-                this.backgroundPosition = position;
+            this.id = this.generateId();
+            this.divElement = document.createElement('div');
+            this.divElement.setAttribute('id', this.id);
+            document.body.appendChild(this.divElement);
+
+            this.y = parseInt(bottom);
+            this.x = parseInt(left);
+            this.backgroundSize = backgroundSize;
+            this.backgroundPosition = position;
+            this.width = parseInt("100px");
+            this.height = parseInt("100px");
+
+            switch (this.type) {
+                case "stone":
+                    this.backgroundImage = "url(file:///Users/wrongway/Documents/dev/game/im/floor.png)";    
+                    break;
+                case "hero":
+                    this.backgroundImage = "url(file:///Users/wrongway/Documents/dev/game/im/pers3.png)";
+                    break;
+                case "flag":
+                    this.backgroundImage = "url(file:///Users/wrongway/Documents/dev/game/im/flag.png)";
+                    break;
+                case "spikes":
+                    this.backgroundImage = "url(file:///Users/wrongway/Documents/dev/game/im/spikes.png)";
+                    break;
+            }
+
+        }
+
+        static counter = 0;
+        generateId() {
+            if (this.type == "hero") {
+                return "hero";
+            }
+            else {
+                let result = myObject.counter;
+                myObject.counter += 1;
+                return "obj" + result;
             }
         }
 
-        // get x() {
-        //     return this.left;
-        // }
-
-        // set x(value) {
-        //     this.left = value; 
-        // }
-
-        // get y() {
-        //     return this.bottom;
-        // }
-
-        // set y(value) {
-        //     this.bottom = value; 
-        // }
-
-        // get type() {
-        //     return this.type;
-        // }
-
-        // set type(value) {
-        //     this.type = value; 
-        // }
-
-        // get height() {
-        //     return this.height;
-        // }
-
-        // set height(value) {
-        //     this.height = value; 
-        // }
-
-        // get width() {
-        //     return this.width;
-        // }
-
-        // set width(value) {
-        //     this.width = value; 
-        // }
-
         myRender() {
-            var d = document.createElement('div');
-            d.style.width = this.width;
-            d.style.height = this.height;
-            d.style.backgroundSize = this.backgroundSize;
-            d.style.backgroundImage = this.backgroundImage;
-            d.style.bottom = this.bottom;
-            d.style.left = this.left;
-            d.style.position = this.backgroundPosition;
-            if (this.type == "hero") {
-                d.setAttribute('id', 'hero');
-            }
-            document.body.appendChild(d);
-        }  
+            let style = this.divElement.style;
+            style.width = this.width + "px";
+            style.height = this.height + "px";
+            style.backgroundSize = this.backgroundSize;
+            style.backgroundImage = this.backgroundImage;
+            style.bottom = this.y + "px";
+            style.left = this.x + "px";
+            style.position = this.backgroundPosition;
+        }
     }
 
-    var arr = [];
+    var objects = [];
 
     for (var i = 0; i < 1600; i += 100) {
         var stone = new myObject("stone", "0px", i + "px");
         if (i == 500) {
             continue;
         }
-        arr.push(stone);  
+        objects.push(stone);  
     }
 
-    var hero = new myObject("hero", "100px", "100px");
-    arr.push(hero);
+    let hero = new myObject("hero", "100px", "100px");
+    objects.push(hero);
 
-    var flag = new myObject("flag", "100px", "1300px");
-    arr.push(flag);
+    let flag = new myObject("flag", "100px", "1300px");
+    objects.push(flag);
 
     var spikes = new myObject("spikes", "0px", "500px");
-    arr.push(spikes);
+    objects.push(spikes);
 
     var spikes = new myObject("spikes", "100px", "300px");
-    arr.push(spikes);
+    objects.push(spikes);
 
     var stone = new myObject("stone", "200px", "300px");
-    arr.push(stone);
+    objects.push(stone);
 
     var stone = new myObject("stone", "200px", "500px");
-    arr.push(stone);
+    objects.push(stone);
 
     var stone = new myObject("stone", "300px", "700px");
-    arr.push(stone);
+    objects.push(stone);
 
     var spikes = new myObject("spikes", "100", "800px");
-    arr.push(spikes);
+    objects.push(spikes);
     
     var spikes = new myObject("spikes", "100", "900px");
-    arr.push(spikes);
+    objects.push(spikes);
 
     var spikes = new myObject("spikes", "100", "1000px");
-    arr.push(spikes);
+    objects.push(spikes);
+
+    function render() {
+        for (var i = 0; i < objects.length; i++) {
+            var obj = objects[i];
+            obj.myRender();
+        }
+    }
 
     function moveX() {
         if (xPos != 0) {
             xPos = xPos - xDelta;
-            console.log(xPos);
-            document.getElementById("hero").style.left = parseInt(document.getElementById("hero").style.left) + xDelta + "px";
+            hero.x += xDelta;
         }
+        // console.log(hero.x);
     }
 
     function moveY() {
         if (yPos != 0) {
             yPos = yPos - yDelta;
-            console.log(yPos);
-            document.getElementById("hero").style.bottom = parseInt(document.getElementById("hero").style.bottom) + yDelta + "px";
+            hero.y += yDelta;
+        }
+        // console.log(hero.y)
+    }
+
+    function move() {
+        moveX();
+        moveY();
+    }
+
+    function calcArea(x1, dx1, y1, dy1, x2, dx2, y2, dy2) {
+        if (x1 > x2) {
+            x1 = [x2, x2 = x1][0];
+            y1 = [y2, y2 = y1][0];
+            dx1 = [dx2, dx2 = dx1][0];
+            dy1 = [dy2, dy2 = dy1][0];
+        }
+        let dX = Math.max(x1 + dx1 - x2, 0);
+        if (y1 > y2) {
+            return dX * Math.max(y2 + dy2 - y1, 0);
+        } else {
+            return dX * Math.max(y1 + dy1 - y2, 0);
         }
     }
 
-    function collisionDetection() {
-        for (var c = 0; c < arr.length; c++) {
-            var obj = arr[i];
+    function collision() {
+        for (var i = 0; i < objects.length; ++i) {
+            let obj = objects[i];
             if (obj.type == "stone") {
-                if (xPos > obj.x() && xPos < obj.x() + obj.width && yPos > obj.y() && yPos < obj.y() + obj.height) {
-                    xPos += xDelta;
-                    yPos += yDelta;
+                let area = calcArea(hero.x, hero.width, hero.y, hero.height, 
+                    obj.x, obj.width, obj.y, obj.height);
+                if (area > 0) {
+                    console.log("Collision with " + obj.id);
                 }
             }
         }
     }
 
-    for (var i = 0; i < arr.length; i++) {
-        var obj = arr[i];
-        obj.myRender();
-    }
-
-    var myIntervalX = setInterval(moveX, 5);
-    var myIntervalY = setInterval(moveY, 5);
-    var myIntervalCollision = setInterval(collisionDetection, 5);
+    var moveSystem = setInterval(move, 5);
+    var renderSystem = setInterval(render, 5);
+    var collisionSystem = setInterval(collision, 5);
+    
     </script>
 </body></html>
