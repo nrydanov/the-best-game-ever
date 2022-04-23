@@ -1,0 +1,123 @@
+﻿@{
+    ViewData["Title"] = "Create game Page";
+    Layout = null;
+    var ImageFolder = "../im/";
+}
+
+<html>
+<head>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js" defer async></script>
+</head>
+<body style="
+        background-image: url(@(ImageFolder)/back.png);
+        width: 100%;
+        height: auto;
+        background-repeat: no-repeat;
+        background-size: cover;
+        overflow: hidden;
+    ">
+<script>
+
+            var keysBatch = [];
+            var gameObjects = [];
+            var frame = 0;
+
+
+            document.addEventListener('keydown', function(event) {
+                console.log('Key: ', event.key);
+                console.log('keyCode: ', event.keyCode);
+                keysBatch.push(event.keyCode);
+            });
+
+            class GameObject {
+
+                constructor(type, y, x, id, width, height, backgroundSize="contain", position="absolute") {
+                    this.type = type;
+                    this.id = id;
+                    this.divElement = document.createElement('div');
+                    this.divElement.setAttribute('id', this.id);
+                    document.body.appendChild(this.divElement);
+
+                    this.y = y;
+                    this.x = x;
+                    this.backgroundSize = backgroundSize;
+                    this.backgroundPosition = position;
+                    this.width = width;
+                    this.height = height;
+                    this.initialized = true;
+
+                    switch (this.type) {
+                        case "stone":
+                            this.backgroundImage = "url(@(ImageFolder)/floor.png)";
+                            break;
+                        case "hero":
+                            this.backgroundImage = "url(@(ImageFolder)/pers3.png)";
+                            this.width = parseInt("50px");
+                            this.height = parseInt("99px");
+                            break;
+                        case "flag":
+                            this.backgroundImage = "url(@(ImageFolder)/flag.png)";
+                            break;
+                        case "spikes":
+                            this.backgroundImage = "url(@(ImageFolder)/spikes.png)";
+                            break;
+                    }
+                }
+
+                render() {
+                    let style = this.divElement.style;
+                    style.width = this.width + "px";
+                    style.height = this.height + "px";
+                    style.backgroundSize = this.backgroundSize;
+                    style.backgroundImage = this.backgroundImage;
+                    style.bottom = this.y + "px";
+                    style.left = this.x + "px";
+                    style.position = this.backgroundPosition;
+                }
+            }
+
+            function render() {
+                $.get("/Game/Update", { "json": JSON.stringify(keysBatch) }, function (data) {
+                    @* console.log("zhopa") *@
+                    let objects = JSON.parse(data);
+                    for (i = 0; i < objects.length; i++) {
+                        let obj = objects[i];
+                        let gameObject;
+                        if (gameObjects.find(e => e.id == obj.Id) == undefined) {
+                            gameObject = new GameObject(obj.ObjectType, obj.PosY, obj.PosX, obj.Id, obj.Width, obj.Height);
+                            gameObjects.push(gameObject);
+                        } else {
+                            gameObjects[i].type = obj.ObjectType;
+                            gameObjects[i].y = obj.PosY;
+                            gameObjects[i].x = obj.PosX;
+                            gameObjects[i].id = obj.Id;
+                        }
+                    }
+                });
+                
+                for (i = 0; i < gameObjects.length; i++) {
+                    gameObjects[i].render();
+                }
+                keysBatch = [];
+            }
+            var renderSystem = setInterval(render, 16);
+        </script>
+<div style="display: flex; justify-content: flex-end">
+    <button style="
+                background-image: url(@(ImageFolder)/button.png);
+                width: 100;
+                height: 50;
+                display: table-cell;
+                vertical-align: middle;
+                justify-content: flex-end;
+                background-repeat: no-repeat;
+                background-size: cover;
+            ">
+        <p style="color:whitesmoke">
+            Save
+        </p>
+
+    </button>
+</div>
+</body>
+</html>

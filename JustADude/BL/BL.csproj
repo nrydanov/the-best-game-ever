@@ -1,0 +1,28 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>netcoreapp3.1</TargetFramework>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <ProjectReference Include="..\DAL\DAL.csproj"/>
+    </ItemGroup>
+    <ItemGroup>
+        <None Remove="Newtonsoft.Json"/>
+        <None Remove="Auth\"/>
+        <None Remove="Register\"/>
+        <None Remove="Game\"/>
+        <None Remove="Game\Systems\"/>
+        <None Remove="Misc\"/>
+        <None Remove="GameObject\"/>
+    </ItemGroup>
+    <ItemGroup>
+        <PackageReference Include="Newtonsoft.Json" Version="13.0.1"/>
+    </ItemGroup>
+    <ItemGroup>
+        <Folder Include="GameLogic\"/>
+        <Folder Include="GameLogic\Systems\"/>
+        <Folder Include="Misc\"/>
+        <Folder Include="Dto\"/>
+    </ItemGroup>
+</Project>

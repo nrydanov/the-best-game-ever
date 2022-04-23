@@ -1,0 +1,26 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>netcoreapp3.1</TargetFramework>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <None Remove="Microsoft.EntityFrameworkCore"/>
+        <None Remove="Microsoft.EntityFrameworkCore.SqlServer"/>
+        <None Remove="Npgsql.EntityFrameworkCore.PostgreSQL"/>
+        <None Remove="Games\"/>
+        <None Remove="GameObjects\"/>
+        <None Remove="Players\"/>
+        <None Remove="Sessions\"/>
+    </ItemGroup>
+    <ItemGroup>
+        <PackageReference Include="Microsoft.EntityFrameworkCore" Version="3.1.24"/>
+        <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="3.1.18"/>
+    </ItemGroup>
+    <ItemGroup>
+        <Folder Include="Games\"/>
+        <Folder Include="GameObjects\"/>
+        <Folder Include="Players\"/>
+        <Folder Include="Sessions\"/>
+    </ItemGroup>
+</Project>

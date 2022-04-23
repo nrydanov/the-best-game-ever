@@ -1,0 +1,76 @@
+﻿table {
+    table-layout: fixed;
+    width: 100%;
+    border-collapse: collapse;
+    border: 3px solid #73B7FA;
+}
+
+html {
+    font-family: 'helvetica neue', helvetica, arial, sans-serif;
+}
+
+th {
+    letter-spacing: 2px;
+}
+
+td {
+    letter-spacing: 1px;
+}
+
+tbody td {
+    text-align: left;
+}
+
+tfoot th {
+    text-align: right;
+}
+
+.dataTables_info {
+    display: flex;
+    width: 100%;
+    justify-content: center;
+}
+
+.dataTables_paginate {
+    display: flex;
+    width: 100%;
+    justify-content: space-around;
+}
+
+.dataTables_paginate > span {
+    display: flex;
+    width: 35%;
+    justify-content: space-around;
+}
+
+.dataTables_paginate > a {
+    cursor: pointer;
+}
+
+.dataTables_paginate > span > a {
+    cursor: pointer;
+}
+
+.odd {
+    transition: .15s ease-in-out;
+}
+
+.even {
+    transition: .15s ease-in-out;
+}
+
+.odd:hover {
+    background-color: #73B7FA;
+}
+
+.even:hover {
+    background-color: #73B7FA;
+}
+
+.clickable-row {
+    cursor: pointer;
+}
+
+.sorting {
+    cursor: default;
+}
