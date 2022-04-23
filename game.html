@@ -12,9 +12,9 @@
     var yDelta = 0;
     var canMoveX = true;
     var canMoveY = true;
-    var movesX = true;
-    var movesY = true;
-    var deltaModule = 2;
+    var yDeltaModule = 3.1;
+    var xDeltaModule = 3;
+
     
     document.addEventListener('keydown', function(event) {
         console.log('Key: ', event.key);
@@ -22,26 +22,22 @@
     
         // Left
         if (event.keyCode == 37) {
-            xDelta = -deltaModule;
-            // yDelta = 0;
+            xDelta -= xDeltaModule;
         }
 
         // Right
         if (event.keyCode == 39) {
-            xDelta = deltaModule;
-            // yDelta = 0;
+            xDelta += xDeltaModule;
         }
 
         // Up
         if (event.keyCode == 38) {
-            yDelta = deltaModule;
-            // xDelta = 0;
+            yDelta = yDeltaModule;
         }
 
         // Down
         if (event.keyCode == 40) {
-            yDelta = -deltaModule;
-            // xDelta = 0;
+            yDelta = -yDeltaModule;
         }
     });
     
@@ -152,14 +148,17 @@
     }
 
     function moveX() {
+        var limitDelta = 2;
+        let deltaModule = Math.min(Math.abs(xDelta), limitDelta);
         if (canMoveX) {
-            hero.x += xDelta;
+            hero.x += Math.sign(xDelta) * deltaModule;
         }
     }
 
     function moveY() {
+        var limitDelta = 2;
         if (canMoveY) {
-            hero.y += yDelta;
+            hero.y += Math.min(yDelta, limitDelta);
         }
     }
 
@@ -168,6 +167,8 @@
         moveY();
         console.log("Hero x:", hero.x);
         console.log("Hero y:", hero.y);
+        console.log("Hero xDelta", xDelta);
+        console.log("Hero yDelta", yDelta);
     }
 
     function calcArea(x1, dx1, y1, dy1, x2, dx2, y2, dy2) {
@@ -179,13 +180,9 @@
         }
         let dX = Math.max(x1 + dx1 - x2, 0);
         if (y1 > y2) {
-            let result = dX * Math.max(y2 + dy2 - y1, 0);
-            // console.log("Result area:", result);
-            return result;
+            return dX * Math.max(y2 + dy2 - y1, 0);
         } else {
-            let result = dX * Math.max(y1 + dy1 - y2, 0);
-            // console.log("Result area:", result); 
-            return result;
+            return dX * Math.max(y1 + dy1 - y2, 0);
         }
     }
 
@@ -201,12 +198,14 @@
                     obj.x, obj.width, obj.y, obj.height);
                 if (xArea > 0) {
                     canMoveX = false;
+                    xDelta = 0;
                     console.log("X Collision with " + obj.id);
                 } else {
                     canMoveX = canMoveX & true;
                 }
                 if (yArea > 0) {
                     canMoveY = false;
+                    yDelta = 0;
                     console.log("Y collision with " + obj.id);
                 } else {
                     canMoveY = canMoveY & true;
@@ -221,15 +220,27 @@
         }
     }
 
-    function ineration() {
+    function inertion() {
+        var EPS = 1e-6;
+        if (xDelta > -EPS && xDelta < EPS) {
+            return;
+        }
 
+        var sign;
+        if (xDelta > 0) {
+            sign = -1;
+        } else {
+            sign = 1;
+        }
+        
+        xDelta += sign * 0.1; 
     }
 
     var collisionSystem = setInterval(collision, 5);
-    var moveSystem = setInterval(move, 1);
+    var moveSystem = setInterval(move, 5);
     var renderSystem = setInterval(render, 5);
     var gravitySystem = setInterval(gravity, 5);
-    // var inertionSystem = setInterval(intertion, 5);
+    var inertionSystem = setInterval(inertion, 5);
     
     </script>
 </body></html>
