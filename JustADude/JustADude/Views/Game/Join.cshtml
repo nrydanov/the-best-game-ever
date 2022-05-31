@@ -1,0 +1,44 @@
+﻿@{ ViewData["Title"] = "Join game Page"; }
+
+<html>
+<script>
+        $.get('/Game/List', function (data) {
+            var json = JSON.parse(data);
+            $(document).ready(function () {
+                table = $('#gamelist').DataTable({
+                    paging: true,
+                    data: json,
+                    columns: [
+                        { data : 'Id' },
+                        { data: 'Host' },
+                        { data: 'Joined' },
+                        { data: 'Created', render: $.fn.dataTable.render.moment("YYYY-MM-DDTHH:mm:ss.SSSSSS", "DD/MM/YYYY HH:mm") },
+                    ],
+                    createdRow: function (row, data, index) {
+                        $(row).addClass("clickable-row")
+                    }
+                });
+                $(".clickable-row").click(function () {
+                    $.get('/Game/SubmitJoin', { "game_id": $(this)[0].children[0].textContent }, function (data) {
+                        window.location.replace("/Game/Start");
+                    })
+                    
+                });
+            });
+        });
+    </script>
+<body>
+<div>
+    <table id="gamelist" class="cell-border compact stripe">
+        <thead>
+        <tr>
+            <th colspan="1" rowspan="1">Id</th>
+            <th colspan="1" rowspan="1">Host</th>
+            <th colspan="1" rowspan="1">Joined</th>
+            <th colspan="1" rowspan="1">Created</th>
+        </tr>
+        </thead>
+    </table>
+</div>
+</body>
+</html>
