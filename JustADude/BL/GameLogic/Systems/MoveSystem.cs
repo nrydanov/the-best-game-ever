@@ -30,24 +30,26 @@ namespace BL.GameLogic.Systems
             props.XDelta += -Math.Sign(props.XDelta) * InertiaAcceleration;
         }
 
-        private static void ApplyMove(HeroProperties heroProperties, IList<int> keys)
+        private static void ApplyMove(HeroProperties heroProperties, ConcurrentStack<string> keys)
         {
             foreach (var key in keys)
                 switch (key)
                 {
-                    case 38: // Up
+                    case "ArrowUp": // Up
                         heroProperties.YDelta += Dy;
                         break;
-                    case 40: // Down
+                    case "ArrowDown": // Down
                         heroProperties.YDelta -= Dy;
                         break;
-                    case 39: // Right
+                    case "ArrowRight": // Right
                         heroProperties.XDelta += Dx;
                         break;
-                    case 37: // Left
+                    case "ArrowLeft": // Left
                         heroProperties.XDelta -= Dx;
                         break;
                 }
+            
+            keys.Clear();
 
             var delta_x = Math.Min(Math.Abs(heroProperties.XDelta),
                 AccelerationLimitX);
@@ -58,7 +60,7 @@ namespace BL.GameLogic.Systems
             heroProperties.YDelta = Math.Sign(heroProperties.YDelta) * delta_y;
         }
 
-        private static void UpdateHeroState(HeroProperties heroProperties, IList<int> keys)
+        private static void UpdateHeroState(HeroProperties heroProperties, ConcurrentStack<string> keys)
         {
             ApplyMove(heroProperties, keys);
             ApplyInertia(heroProperties);
@@ -66,7 +68,7 @@ namespace BL.GameLogic.Systems
         }
 
         public static void Update(List<GameObject> objects,
-            IList<int> keys, GameObject hero)
+            ConcurrentStack<string> keys, GameObject hero)
         {
             if (!properties.ContainsKey(hero.ObjectId))
             {
@@ -79,9 +81,10 @@ namespace BL.GameLogic.Systems
             UpdateHeroState(hero_properties, keys);
 
             CollisionSystem.Update(hero, objects);
-
             hero.PosX += (long)hero_properties.XDelta;
             hero.PosY += (long)hero_properties.YDelta;
+            Console.WriteLine(hero.PosX);
+            Console.WriteLine(hero.PosY);
         }
 
         public class HeroProperties

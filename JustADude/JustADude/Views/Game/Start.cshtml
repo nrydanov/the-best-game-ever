@@ -22,9 +22,8 @@
             var gameObjects = [];
 
             document.addEventListener('keydown', function(event) {
-                console.log('Key: ', event.key);
-                console.log('keyCode: ', event.keyCode);
-                keysBatch.push(event.keyCode);
+                console.log('key: ', event.key);
+                keysBatch.push(event.key);
             });
 
             class GameObject {
@@ -42,7 +41,7 @@
                     this.backgroundPosition = position;
                     this.width = width;
                     this.height = height;
-                    this.initialized = true;
+                    this.initialized = false;
 
                     switch (this.type) {
                         case "stone":
@@ -73,9 +72,16 @@
                     style.position = this.backgroundPosition;
                 }
             }
+            
+            function keySend() {
+                if (keysBatch.length !== 0) {
+                    $.post("/Game/Update", { "json": JSON.stringify(keysBatch) });    
+                    keysBatch = [];
+                }
+            }
 
             function render() {
-                $.get("/Game/Update", { "json": JSON.stringify(keysBatch) }, function (data) {
+                $.get("/Game/Update", function (data) {
                     let objects = JSON.parse(data);
                     for (i = 0; i < objects.length; i++) {
                         let obj = objects[i];
@@ -83,20 +89,22 @@
                         if (gameObjects.find(e => e.id === obj.Id) === undefined) {
                             gameObject = new GameObject(obj.ObjectType, obj.PosY, obj.PosX, obj.Id, obj.Width, obj.Height);
                             gameObjects.push(gameObject);
-                        } else {
-                            gameObjects[i].type = obj.ObjectType;
+                            
+                            gameObject.render();
+                        } else if (!gameObjects[i].initialized || gameObjects[i].y !== obj.PosY 
+                                || gameObjects[i].x !== obj.PosX) {
                             gameObjects[i].y = obj.PosY;
                             gameObjects[i].x = obj.PosX;
+                            
+                            gameObjects[i].render();
                         }
                     }
                 });
                 
-                for (i = 0; i < gameObjects.length; i++) {
-                    gameObjects[i].render();
-                }
-                keysBatch = [];
             }
-            var renderSystem = setInterval(render, 16);
+            let renderSystem = setInterval(render, 25);
+            let keySystem = setInterval(keySend, 50);
+            
         </script>
 <div style="display: flex; justify-content: flex-end">
     <button style="

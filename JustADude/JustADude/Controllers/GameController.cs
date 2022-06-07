@@ -64,21 +64,26 @@ namespace JustADude.Controllers
             var result = JsonConvert.SerializeObject(GameBL.GetGames());
             return result;
         }
-
-        [HttpGet]
-        public string Update(string json)
+        
+        [HttpPost]
+        public void Update(string json)
         {
             // TODO: Return to error page
-            if (!User.Identity.IsAuthenticated) return "";
+            if (!User.Identity.IsAuthenticated)
+                return;
 
+            IList<string> keys = JsonConvert.DeserializeObject<List<string>>(json);
+            GameBL.Update(User.Identity.Name, keys);
+        }
+
+        [HttpGet]
+        public string Update()
+        {
             // TODO: Return to error page
-            if (json == null) return "";
+            if (!User.Identity.IsAuthenticated) 
+                return "";
 
-            IList<int> keys = JsonConvert.DeserializeObject<List<int>>(json);
-            var objs = GameBL.Update(User.Identity.Name, keys);
-
-            var response_json = JsonConvert.SerializeObject(objs);
-
+            var response_json = JsonConvert.SerializeObject(GameBL.GetObjects(User.Identity.Name));
             return response_json;
         }
 
