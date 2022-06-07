@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using BL.Dto;
 
@@ -6,8 +7,8 @@ namespace BL.GameLogic.Systems
 {
     public static class MoveSystem
     {
-        public static Dictionary<long, HeroProperties> properties =
-            new Dictionary<long, HeroProperties>();
+        public static ConcurrentDictionary<long, HeroProperties> properties =
+            new ConcurrentDictionary<long, HeroProperties>();
 
         private const double Dx = 3;
         private const double Dy = 10;
@@ -70,7 +71,7 @@ namespace BL.GameLogic.Systems
             if (!properties.ContainsKey(hero.ObjectId))
             {
                 var props = new HeroProperties();
-                properties.Add(hero.ObjectId, props);
+                properties.TryAdd(hero.ObjectId, props);
             }
 
             var hero_properties = properties[hero.ObjectId];

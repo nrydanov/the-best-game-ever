@@ -68,8 +68,10 @@ namespace JustADude.Controllers
         [HttpGet]
         public string Update(string json)
         {
+            // TODO: Return to error page
             if (!User.Identity.IsAuthenticated) return "";
 
+            // TODO: Return to error page
             if (json == null) return "";
 
             IList<int> keys = JsonConvert.DeserializeObject<List<int>>(json);

@@ -113,7 +113,8 @@ namespace BL
             if (!connectedUsers.ContainsKey(player.Id))
             {
                 Console.WriteLine("Attempt to update a game for not connected user");
-
+                
+                // TODO: To error page
                 return new List <GameObject>();
             }
 

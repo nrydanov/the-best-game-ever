@@ -20,8 +20,6 @@
 
             var keysBatch = [];
             var gameObjects = [];
-            var frame = 0;
-
 
             document.addEventListener('keydown', function(event) {
                 console.log('Key: ', event.key);
@@ -78,19 +76,17 @@
 
             function render() {
                 $.get("/Game/Update", { "json": JSON.stringify(keysBatch) }, function (data) {
-                    @* console.log("zhopa") *@
                     let objects = JSON.parse(data);
                     for (i = 0; i < objects.length; i++) {
                         let obj = objects[i];
                         let gameObject;
-                        if (gameObjects.find(e => e.id == obj.Id) == undefined) {
+                        if (gameObjects.find(e => e.id === obj.Id) === undefined) {
                             gameObject = new GameObject(obj.ObjectType, obj.PosY, obj.PosX, obj.Id, obj.Width, obj.Height);
                             gameObjects.push(gameObject);
                         } else {
                             gameObjects[i].type = obj.ObjectType;
                             gameObjects[i].y = obj.PosY;
                             gameObjects[i].x = obj.PosX;
-                            gameObjects[i].id = obj.Id;
                         }
                     }
                 });
