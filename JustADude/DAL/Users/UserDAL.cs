@@ -1,15 +1,17 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
+using DAL.Sessions;
 
-namespace DAL.Players
+namespace DAL.Users
 {
-    public class PlayerDAL
+    public class UserDAL
     {
-        public static bool Create(Player player)
+        public static bool Create(User user)
         {
             using (var context = new GameContext())
             {
-                context.Add(player);
+                context.Add(user);
                 try
                 {
                     context.SaveChanges();
@@ -22,23 +24,31 @@ namespace DAL.Players
             }
         }
 
-        public static Player GetByName(string username)
+        public static User GetByName(string username)
         {
-            Player player;
+            User user;
             using (var context = new GameContext())
             {
-                var query = context.Players.Where(e => e.Username == username);
+                var query = context.Users.Where(e => e.Username == username);
                 try
                 {
-                    player = query.First();
+                    user = query.First();
                 }
                 catch (InvalidOperationException)
                 {
-                    player = null;
+                    user = null;
                 }
             }
 
-            return player;
+            return user;
+        }
+        
+        public static List<User> GetUsers()
+        {
+            using (var context = new GameContext())
+            {
+                return context.Users.ToList();
+            }
         }
     }
 }

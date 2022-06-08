@@ -1,15 +1,15 @@
 ﻿using System.ComponentModel.DataAnnotations.Schema;
 
-namespace DAL.Players
+namespace DAL.Users
 {
-    [Table("Players")]
-    public class Player
+    [Table("Users")]
+    public class User
     {
-        public Player()
+        public User()
         {
         }
 
-        public Player(string username, string password, long score = 0)
+        public User(string username, string password, long score = 0)
         {
             Username = username;
             Password = password;

@@ -3,7 +3,7 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Timers;
 using DAL.Sessions;
-using DAL.Players;
+using DAL.Users;
 using DAL.Games;
 using DAL.GameObjects;
 using BL.Dto;
@@ -17,17 +17,17 @@ namespace BL
         private static ConcurrentDictionary<long, List<GameObject>> gameObjects;
         private static ConcurrentDictionary<string, long> userIds;
         private static ConcurrentDictionary<long, ConcurrentStack<string>> events;
+        
         static GameBL()
         {
             connectedUsers = RestoreConnectedUsers();
             gameObjects = new ConcurrentDictionary<long, List<GameObject>>();
-            userIds = new ConcurrentDictionary<string, long>();
+            userIds = RestoreUserIds();
             events = new ConcurrentDictionary<long, ConcurrentStack<string>>();
 
             var timer = new Timer(10);
             timer.Elapsed += UpdateGameState;
             timer.Start();
-            
         }
 
         private static void UpdateGameState(object sender, EventArgs args)
@@ -52,26 +52,40 @@ namespace BL
 
         private static ConcurrentDictionary<long, UserInfo> RestoreConnectedUsers()
         {
-            var sessions = SessionDAL.GetSessions();
+            var sessions = SessionDAL.GetSessionsInfo();
             var dict =
                     new ConcurrentDictionary<long, UserInfo>();
 
             foreach (var s in sessions)
             {
                 var e = GameObjectDAL.GetObjectById(s.HeroId);
-                
-                dict.TryAdd(s.UserId, new UserInfo(s.GameId, new GameObject(e)));
+
+                dict.TryAdd(s.UserId, new UserInfo(s.GameId, null));
             }
             
             return dict;
-        } 
-        
+        }
+
+        private static ConcurrentDictionary<string, long> RestoreUserIds()
+        {
+            var users = UserDAL.GetUsers();
+
+            var dict = new ConcurrentDictionary<string, long>();
+
+            for (int i = 0; i < users.Count; ++i)
+            {
+                dict.TryAdd(users[i].Username, users[i].Id);
+            }
+
+            return dict;
+        }
+
         public static bool Create(String hostName)
         {
             long id;
             try
             {
-                id = PlayerDAL.GetByName(hostName).Id;
+                id = UserDAL.GetByName(hostName).Id;
             }
             catch(NullReferenceException)
             {
@@ -85,13 +99,21 @@ namespace BL
         private static void LoadObjectsFromDB(long gameId)
         {
             var objs = GameObjectBL.GetObjectsByGameId(gameId);
+            var heroes = objs.FindAll(e => e.ObjectType == "hero");
+
+            for (int i = 0; i < heroes.Count; ++i)
+            {
+                var user_id = SessionDAL.GetByHeroId(heroes[i].ObjectId).UserId;
+                connectedUsers[user_id].Hero = heroes[i];
+            }
+
             gameObjects.TryAdd(gameId, objs);
         }
 
         public static bool Join(string user, long gameId)
         {
 
-            var player = PlayerDAL.GetByName(user);
+            var player = UserDAL.GetByName(user);
             var user_id = player.Id;
 
             if (connectedUsers.ContainsKey(user_id))
@@ -105,6 +127,7 @@ namespace BL
             }
 
             var hero_id = GameDAL.JoinUser(user_id, gameId);
+
             var entity = GameObjectDAL.GetObjectById(hero_id);
             var hero = new GameObject(entity);
             
@@ -118,9 +141,9 @@ namespace BL
             return true;
         }
 
-        public static bool Leave(String user)
+        public static bool Leave(string user)
         {
-            var player = PlayerDAL.GetByName(user);
+            var player = UserDAL.GetByName(user);
 
             if (!connectedUsers.ContainsKey(player.Id))
             {
@@ -143,7 +166,7 @@ namespace BL
         {
             if (!userIds.ContainsKey(user))
             {
-                var player = PlayerDAL.GetByName(user);
+                var player = UserDAL.GetByName(user);
                 userIds.TryAdd(user, player.Id);
                 events[player.Id] = new ConcurrentStack<string>();
             }
@@ -162,12 +185,6 @@ namespace BL
 
         public static void Update(string user, IList<string> keys)
         {
-            if (!userIds.ContainsKey(user))
-            {
-                var player = PlayerDAL.GetByName(user);
-                userIds.TryAdd(user, player.Id);
-            }
-            
             var user_id = userIds[user];
 
             if (!events.ContainsKey(user_id))

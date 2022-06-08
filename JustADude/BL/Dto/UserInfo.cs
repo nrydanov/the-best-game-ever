@@ -1,7 +1,4 @@
-﻿using System.Net.Sockets;
-using DAL.Players;
-
-namespace BL.Dto
+﻿namespace BL.Dto
 {
     public class UserInfo
     {

@@ -83,8 +83,6 @@ namespace BL.GameLogic.Systems
             CollisionSystem.Update(hero, objects);
             hero.PosX += (long)hero_properties.XDelta;
             hero.PosY += (long)hero_properties.YDelta;
-            Console.WriteLine(hero.PosX);
-            Console.WriteLine(hero.PosY);
         }
 
         public class HeroProperties

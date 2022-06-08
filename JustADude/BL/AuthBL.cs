@@ -1,6 +1,6 @@
 ﻿using System;
 using BL.Misc;
-using DAL.Players;
+using DAL.Users;
 
 namespace BL
 {
@@ -10,7 +10,7 @@ namespace BL
         {
             try
             {
-                var player = PlayerDAL.GetByName(username);
+                var player = UserDAL.GetByName(username);
                 return player.Password.Equals(Hash.GetStringHash(password));
             }
             catch (NullReferenceException)
