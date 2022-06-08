@@ -45,7 +45,14 @@ namespace BL.GameLogic.Systems
 
                     if (area_x > 0) props.XDelta = 0;
 
-                    if (area_y > 0) props.YDelta = 0;
+                    if (area_y > 0)
+                    {
+                        if (props.YDelta < 0)
+                        {
+                            props.CanJump = true;    
+                        }
+                        props.YDelta = 0;
+                    }
                 }
         }
     }

@@ -16,22 +16,25 @@ namespace BL
         private static ConcurrentDictionary<long, UserInfo> connectedUsers;
         private static ConcurrentDictionary<long, List<GameObject>> gameObjects;
         private static ConcurrentDictionary<string, long> userIds;
-        private static ConcurrentDictionary<long, ConcurrentStack<string>> events;
+        private static ConcurrentDictionary<long, ConcurrentBag<string>> events;
+
+        public const long UpdateGameStateRate = 25;
         
         static GameBL()
         {
             connectedUsers = RestoreConnectedUsers();
             gameObjects = new ConcurrentDictionary<long, List<GameObject>>();
             userIds = RestoreUserIds();
-            events = new ConcurrentDictionary<long, ConcurrentStack<string>>();
-
-            var timer = new Timer(10);
+            events = new ConcurrentDictionary<long, ConcurrentBag<string>>();
+            
+            var timer = new Timer(UpdateGameStateRate);
             timer.Elapsed += UpdateGameState;
             timer.Start();
         }
 
         private static void UpdateGameState(object sender, EventArgs args)
         {
+            
             foreach (var e in events)
             {
                 var user_id = e.Key;
@@ -45,7 +48,6 @@ namespace BL
                 }
                 var objects = gameObjects[info.GameId];
                 var hero = info.Hero;
-
                 MoveSystem.Update(objects, actions, hero);
             }
         }
@@ -136,7 +138,7 @@ namespace BL
             gameObjects[gameId].Add(hero);
             connectedUsers.TryAdd(player.Id, new UserInfo(gameId, hero));
             userIds.TryAdd(user, user_id);
-            events.TryAdd(user_id, new ConcurrentStack<string>());
+            events.TryAdd(user_id, new ConcurrentBag<string>());
 
             return true;
         }
@@ -168,7 +170,7 @@ namespace BL
             {
                 var player = UserDAL.GetByName(user);
                 userIds.TryAdd(user, player.Id);
-                events[player.Id] = new ConcurrentStack<string>();
+                events[player.Id] = new ConcurrentBag<string>();
             }
             
             var user_id = userIds[user];
@@ -189,15 +191,15 @@ namespace BL
 
             if (!events.ContainsKey(user_id))
             {
-                events.TryAdd(user_id, new ConcurrentStack<string>());
+                events.TryAdd(user_id, new ConcurrentBag<string>());
             }
+            events[user_id].Clear();
 
             foreach (var key_event in keys)
             {
                 if (key_event.Value)
                 {
-                    Console.WriteLine(key_event.Key);
-                    events[user_id].Push(key_event.Key);    
+                    events[user_id].Add(key_event.Key);    
                 }
             }
         }

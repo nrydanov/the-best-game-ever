@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Threading.Tasks;
 using BL;
@@ -83,8 +84,9 @@ namespace JustADude.Controllers
             keys["ArrowDown"] = convertBitToFlag(mask, 1);
             keys["ArrowRight"] = convertBitToFlag(mask, 2);
             keys["ArrowLeft"] = convertBitToFlag(mask, 3);
+            var name = User.Identity.Name;
             
-            GameBL.Update(User.Identity.Name, keys);
+            Task.Run(() => GameBL.Update(name, keys));
         }
 
         [HttpGet]

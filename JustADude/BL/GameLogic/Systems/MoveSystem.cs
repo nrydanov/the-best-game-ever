@@ -30,16 +30,21 @@ namespace BL.GameLogic.Systems
             props.XDelta += -Math.Sign(props.XDelta) * InertiaAcceleration;
         }
 
-        private static void ApplyMove(HeroProperties heroProperties, ConcurrentStack<string> keys)
+        private static void ApplyMove(HeroProperties heroProperties, ConcurrentBag<string> keys)
         {
             foreach (var key in keys)
                 switch (key)
                 {
                     case "ArrowUp": // Up
-                        heroProperties.YDelta += Dy;
+                        if (heroProperties.CanJump)
+                        {
+                            heroProperties.YDelta += Dy;
+                            heroProperties.CanJump = false;
+                        }
                         break;
                     case "ArrowDown": // Down
-                        heroProperties.YDelta -= Dy;
+                        // TODO: Can't in normal case, probably in future
+                        // heroProperties.YDelta -= Dy;
                         break;
                     case "ArrowRight": // Right
                         heroProperties.XDelta += Dx;
@@ -48,8 +53,6 @@ namespace BL.GameLogic.Systems
                         heroProperties.XDelta -= Dx;
                         break;
                 }
-            
-            keys.Clear();
 
             var delta_x = Math.Min(Math.Abs(heroProperties.XDelta),
                 AccelerationLimitX);
@@ -60,7 +63,7 @@ namespace BL.GameLogic.Systems
             heroProperties.YDelta = Math.Sign(heroProperties.YDelta) * delta_y;
         }
 
-        private static void UpdateHeroState(HeroProperties heroProperties, ConcurrentStack<string> keys)
+        private static void UpdateHeroState(HeroProperties heroProperties, ConcurrentBag<string> keys)
         {
             ApplyMove(heroProperties, keys);
             ApplyInertia(heroProperties);
@@ -68,7 +71,7 @@ namespace BL.GameLogic.Systems
         }
 
         public static void Update(List<GameObject> objects,
-            ConcurrentStack<string> keys, GameObject hero)
+            ConcurrentBag<string> keys, GameObject hero)
         {
             if (!properties.ContainsKey(hero.ObjectId))
             {
@@ -91,10 +94,13 @@ namespace BL.GameLogic.Systems
             {
                 XDelta = 0;
                 YDelta = 0;
+                CanJump = true;
             }
 
             public double XDelta { get; set; }
             public double YDelta { get; set; }
+            
+            public bool CanJump { get; set; }
         }
     }
 }
