@@ -14,6 +14,7 @@ namespace JustADude.Controllers
     public class GameController : Controller
     {
         private readonly ILogger<HomeController> _logger;
+        private Dictionary<string, bool> keys = new Dictionary<string, bool>();
 
         public GameController(ILogger<HomeController> logger)
         {
@@ -64,15 +65,25 @@ namespace JustADude.Controllers
             var result = JsonConvert.SerializeObject(GameBL.GetGames());
             return result;
         }
+
+        private bool convertBitToFlag(string mask, int index)
+        {
+            return mask[index] != '0';
+        }
         
         [HttpPost]
-        public void Update(string json)
+        public void Update(string mask)
         {
             // TODO: Return to error page
             if (!User.Identity.IsAuthenticated)
                 return;
 
-            IList<string> keys = JsonConvert.DeserializeObject<List<string>>(json);
+            
+            keys["ArrowUp"] = convertBitToFlag(mask, 0);
+            keys["ArrowDown"] = convertBitToFlag(mask, 1);
+            keys["ArrowRight"] = convertBitToFlag(mask, 2);
+            keys["ArrowLeft"] = convertBitToFlag(mask, 3);
+            
             GameBL.Update(User.Identity.Name, keys);
         }
 

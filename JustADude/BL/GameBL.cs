@@ -183,7 +183,7 @@ namespace BL
             return gameObjects[game_id];
         }
 
-        public static void Update(string user, IList<string> keys)
+        public static void Update(string user, Dictionary<string, bool> keys)
         {
             var user_id = userIds[user];
 
@@ -192,9 +192,13 @@ namespace BL
                 events.TryAdd(user_id, new ConcurrentStack<string>());
             }
 
-            for (int i = 0; i < keys.Count; ++i)
+            foreach (var key_event in keys)
             {
-                events[user_id].Push(keys[i]);
+                if (key_event.Value)
+                {
+                    Console.WriteLine(key_event.Key);
+                    events[user_id].Push(key_event.Key);    
+                }
             }
         }
     }

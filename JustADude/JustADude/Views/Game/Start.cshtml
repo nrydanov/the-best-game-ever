@@ -18,12 +18,25 @@
     ">
 <script>
 
-            var keysBatch = [];
-            var gameObjects = [];
+            let keysPressed = {"ArrowUp" : 0, "ArrowDown" : 0, "ArrowRight" : 0, "ArrowLeft" : 0};
+            let gameObjects = [];
+            let availableKeys = ["ArrowUp", "ArrowDown", "ArrowRight", "ArrowLeft"];
+            let keyCounter = 0;
 
             document.addEventListener('keydown', function(event) {
-                console.log('key: ', event.key);
-                keysBatch.push(event.key);
+                if (availableKeys.indexOf(event.key) === -1) {
+                    return;
+                }
+                keysPressed[event.key] = 1;
+                keyCounter += 1;
+            });
+            
+            document.addEventListener("keyup", function(event) {
+                if (availableKeys.indexOf(event.key) === -1) {
+                    return;
+                }
+                keysPressed[event.key] = 0;
+                keyCounter -= 1;
             });
 
             class GameObject {
@@ -73,23 +86,33 @@
                 }
             }
             
+            function getKeyBit(key) {
+                if (keysPressed[key]) {
+                    return "1";
+                }
+                else {
+                    return "0";
+                }
+            }
+            
             function keySend() {
-                if (keysBatch.length !== 0) {
-                    $.post("/Game/Update", { "json": JSON.stringify(keysBatch) });    
-                    keysBatch = [];
+                if (keyCounter > 0) {
+                    let keyMask = "";
+                    availableKeys.forEach(key => keyMask += getKeyBit(key));
+                    $.post("/Game/Update", {"mask" : keyMask});
                 }
             }
 
             function render() {
                 $.get("/Game/Update", function (data) {
                     let objects = JSON.parse(data);
-                    for (i = 0; i < objects.length; i++) {
+                    for (let i = 0; i < objects.length; i++) {
                         let obj = objects[i];
                         let gameObject;
                         if (gameObjects.find(e => e.id === obj.Id) === undefined) {
                             gameObject = new GameObject(obj.ObjectType, obj.PosY, obj.PosX, obj.Id, obj.Width, obj.Height);
                             gameObjects.push(gameObject);
-                            
+
                             gameObject.render();
                         } else if (!gameObjects[i].initialized || gameObjects[i].y !== obj.PosY 
                                 || gameObjects[i].x !== obj.PosX) {
@@ -102,7 +125,7 @@
                 });
                 
             }
-            let renderSystem = setInterval(render, 25);
+            let renderSystem = setInterval(render, 50);
             let keySystem = setInterval(keySend, 50);
             
         </script>
