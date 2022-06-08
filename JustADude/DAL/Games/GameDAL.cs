@@ -12,7 +12,7 @@ namespace DAL.Games
     {
         public static async Task<bool> Create(Game game)
         {
-            using (var context = new GameContext())
+            await using (var context = new GameContext())
             {
                 try
                 {
@@ -30,7 +30,7 @@ namespace DAL.Games
         public static async Task<Game> GetByHostName(string name)
         {
             long id;
-            using (var context = new GameContext())
+            await using (var context = new GameContext())
             {
                 var query = context.Users.Where(e => e.Username == name);
                 try
@@ -49,7 +49,7 @@ namespace DAL.Games
         public static async Task<Game> GetByHostId(long id)
         {
             Game game;
-            using (var context = new GameContext())
+            await using (var context = new GameContext())
             {
                 var query = context.Games.Where(e => e.HostId == id);
                 try
@@ -67,7 +67,7 @@ namespace DAL.Games
 
         public static async Task<IList<GameInfo>> GetGames()
         {
-            using (var context = new GameContext())
+            await using (var context = new GameContext())
             {
                 var result = await (from g in context.Games
                     join p in context.Users on g.HostId equals p.Id
@@ -91,7 +91,7 @@ namespace DAL.Games
 
         public static async Task<long> JoinUser(long userId, long gameId)
         {
-            using (var context = new GameContext())
+            await using (var context = new GameContext())
             {
                 var obj = new GameObjectEnt(gameId, "hero", 100, 100);
                 await context.AddAsync(obj);

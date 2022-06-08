@@ -11,7 +11,7 @@ namespace DAL.Users
     {
         public static async Task<bool> Create(User user)
         {
-            using (var context = new GameContext())
+            await using (var context = new GameContext())
             {
                 
                 try
@@ -30,7 +30,7 @@ namespace DAL.Users
         public static async Task<User> GetByName(string username)
         {
             User user;
-            using (var context = new GameContext())
+            await using (var context = new GameContext())
             {
                 var query = context.Users.Where(e => e.Username == username);
                 try
@@ -45,9 +45,27 @@ namespace DAL.Users
             return user;
         }
         
+        public static async Task<User> GetById(long id)
+        {
+            User user;
+            await using (var context = new GameContext())
+            {
+                var query = context.Users.Where(e => e.Id == id);
+                try
+                {
+                    user = await query.FirstAsync();
+                }
+                catch (InvalidOperationException)
+                {
+                    user = null;
+                }
+            }
+            return user;
+        }
+        
         public static async Task<List<User>> GetUsers()
         {
-            using (var context = new GameContext())
+            await using (var context = new GameContext())
             {
                 return await context.Users.ToListAsync();
             }

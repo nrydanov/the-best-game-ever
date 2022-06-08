@@ -37,11 +37,8 @@ namespace BL
         private static void UpdateGameState(object sender, EventArgs args)
         {
             
-            foreach (var e in events)
+            foreach (var (user_id, actions) in events)
             {
-                var user_id = e.Key;
-                var actions = e.Value;
-
                 var info = connectedUsers[user_id];
                 if (!gameObjects.ContainsKey(info.GameId))
                 {
@@ -60,9 +57,9 @@ namespace BL
             var dict =
                     new ConcurrentDictionary<long, UserInfo>();
 
-            foreach (var s in sessions)
+            for (int i = 0; i < sessions.Count; ++i)
             {
-                var e = GameObjectDAL.GetObjectById(s.HeroId);
+                var s = sessions[i];
 
                 dict.TryAdd(s.UserId, new UserInfo(s.GameId, null));
             }
@@ -78,7 +75,8 @@ namespace BL
 
             for (int i = 0; i < users.Count; ++i)
             {
-                dict.TryAdd(users[i].Username, users[i].Id);
+                var user = users[i];
+                dict.TryAdd(user.Username, user.Id);
             }
 
             return dict;
@@ -89,7 +87,7 @@ namespace BL
             long id;
             try
             {
-                id = UserDAL.GetByName(hostName).Id;
+                id = (await UserDAL.GetByName(hostName)).Id;
             }
             catch(NullReferenceException)
             {
@@ -103,13 +101,17 @@ namespace BL
         private static async Task<bool> LoadObjectsFromDB(long gameId)
         {
             var objs = await GameObjectBL.GetObjectsByGameId(gameId);
+            // TODO: Remove O(N)
             var heroes = objs.FindAll(e => e.ObjectType == "hero");
-
             for (int i = 0; i < heroes.Count; ++i)
             {
-                var session = await SessionDAL.GetByHeroId(heroes[i].ObjectId);
+                var hero = heroes[i];
+                var session = await SessionDAL.GetByHeroId(hero.ObjectId);
                 var user_id = session.UserId;
-                connectedUsers[user_id].Hero = heroes[i];
+                var user = await UserDAL.GetById(user_id);
+                hero.Username = user.Username;
+                
+                connectedUsers[user_id].Hero = hero;
             }
 
             return gameObjects.TryAdd(gameId, objs);
@@ -199,7 +201,7 @@ namespace BL
             return mask[index] != '0';
         }
 
-        public static void Update(string user, string mask)
+        public static async void Update(string user, string mask)
         {
             var keys = new Dictionary<string, bool>();
             
@@ -215,9 +217,11 @@ namespace BL
                 events.TryAdd(user_id, new ConcurrentDictionary<string, bool>());
             }
 
+            var actions = events[user_id];
+
             foreach (var key_event in keys)
             {
-                events[user_id].AddOrUpdate(key_event.Key, 
+                actions.AddOrUpdate(key_event.Key, 
                     key_event.Value, (key, value) => key_event.Value);
             }
         }

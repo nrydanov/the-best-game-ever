@@ -9,7 +9,7 @@ namespace DAL.GameObjects
     {
         public static async Task<List<GameObjectEnt>> GetObjectsByGameId(long gameId)
         {
-            using (var context = new GameContext())
+            await using (var context = new GameContext())
             {
                 var result = 
                     await context.GameObjectEnt.Where(e => e.GameId == gameId).ToListAsync();
@@ -19,7 +19,7 @@ namespace DAL.GameObjects
 
         public static async Task<GameObjectEnt> GetObjectById(long id)
         {
-            using (var context = new GameContext())
+            await using (var context = new GameContext())
             {
                 var result = await context.GameObjectEnt.Where(e => e.Id == id).FirstAsync();
                 return result;

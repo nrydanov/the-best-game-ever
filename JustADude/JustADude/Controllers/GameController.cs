@@ -71,7 +71,7 @@ namespace JustADude.Controllers
             // TODO: Return to error page
             if (!User.Identity.IsAuthenticated)
                 return;
-
+            
             var name = User.Identity.Name;
             
             GameBL.Update(name, mask);

@@ -10,7 +10,7 @@ namespace DAL.Sessions
     {
         public static async Task<Session> GetByUserId(long userId)
         {
-            using (var context = new GameContext())
+            await using (var context = new GameContext())
             {
                 return await context.Sessions.FirstAsync(e => e.UserId == userId);
             }
@@ -18,7 +18,7 @@ namespace DAL.Sessions
         
         public static async Task<Session> GetByHeroId(long heroId)
         {
-            using (var context = new GameContext())
+            await using (var context = new GameContext())
             {
                 return await context.Sessions.FirstAsync(e => e.HeroId == heroId);
             }
@@ -26,7 +26,7 @@ namespace DAL.Sessions
 
         public static async Task<List<SessionInfo>> GetSessionsInfo()
         {
-            using (var context = new GameContext())
+            await using (var context = new GameContext())
             {
                 var result = await (from u in context.Users
                     join s in context.Sessions on u.Id equals s.UserId
