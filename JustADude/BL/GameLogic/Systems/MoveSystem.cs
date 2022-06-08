@@ -7,8 +7,8 @@ namespace BL.GameLogic.Systems
 {
     public static class MoveSystem
     {
-        public static Dictionary<long, HeroProperties> properties =
-            new Dictionary<long, HeroProperties>();
+        public static ConcurrentDictionary<long, HeroProperties> properties =
+            new ConcurrentDictionary<long, HeroProperties>();
 
         private const double Dx = 3;
         private const double Dy = 10;

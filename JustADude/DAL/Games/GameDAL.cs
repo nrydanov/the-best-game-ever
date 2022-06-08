@@ -94,14 +94,30 @@ namespace DAL.Games
             await using (var context = new GameContext())
             {
                 var obj = new GameObjectEnt(gameId, "hero", 100, 100);
-                await context.AddAsync(obj);
+                await context.GameObjectEnt.AddAsync(obj);
                 await context.SaveChangesAsync();
 
                 var session = new Session(userId, gameId, obj.Id);
 
-                await context.AddAsync(session);
+                await context.Sessions.AddAsync(session);
                 await context.SaveChangesAsync();
                 return obj.Id;
+            }
+        }
+        
+        public static void DropUser(long userId)
+        {
+            using (var context = new GameContext())
+            {
+                var session = context.Sessions.First(e => e.UserId == userId);
+                var hero = 
+                    context.GameObjectEnt.First(e => e.Id == session.HeroId);
+
+                context.Remove(session);
+                context.SaveChanges();
+
+                context.Remove(hero);
+                context.SaveChanges();
             }
         }
     }

@@ -100,6 +100,10 @@
                     style.left = this.x + "px";
                     style.position = this.backgroundPosition;
                 }
+                
+                destroy() {
+                    document.body.removeChild(this.divElement);
+                }
             }
 
             function render() {
@@ -107,9 +111,8 @@
                     let objects = JSON.parse(data);
                     for (let i = 0; i < objects.length; i++) {
                         let obj = objects[i];
-                        let gameObject;
                         if (gameObjects.find(e => e.id === obj.Id) === undefined) {
-                            gameObject = new GameObject(obj.ObjectType, obj.PosY, obj.PosX, obj.Id, obj.Width, obj.Height);
+                            let gameObject = new GameObject(obj.ObjectType, obj.PosY, obj.PosX, obj.Id, obj.Width, obj.Height);
                             gameObjects.push(gameObject);
 
                             gameObject.render();
@@ -121,6 +124,16 @@
                             gameObjects[i].render();
                         }
                     }
+                    // TODO: Ugly, but works. Find a better way 
+                    let missingObjects = gameObjects.filter(function (value, index, arr) {
+                        return objects.find(e => e.Id === value.id) === undefined;
+                    });
+                    for (let i = 0; i < missingObjects.length; i++) {
+                        missingObjects[i].destroy();
+                    }
+                    gameObjects = gameObjects.filter(function (value, index, arr) {
+                        return objects.find(e => e.Id === value.id) !== undefined;
+                    });
                 });   
             }
             
@@ -128,21 +141,21 @@
             
         </script>
 <div style="display: flex; justify-content: flex-end">
-    <button style="
-                background-image: url(@(ImageFolder)/button.png);
-                width: 100;
-                height: 50;
-                display: table-cell;
-                vertical-align: middle;
-                justify-content: flex-end;
-                background-repeat: no-repeat;
-                background-size: cover;
-            ">
-        <p style="color:whitesmoke">
-            Save
-        </p>
-
-    </button>
+@*     <button style=" *@
+@*                 background-image: url(@(ImageFolder)/button.png); *@
+@*                 width: 100; *@
+@*                 height: 50; *@
+@*                 display: table-cell; *@
+@*                 vertical-align: middle; *@
+@*                 justify-content: flex-end; *@
+@*                 background-repeat: no-repeat; *@
+@*                 background-size: cover; *@
+@*             "> *@
+@*         <p style="color:whitesmoke"> *@
+@*             Save *@
+@*         </p> *@
+@* *@
+@*     </button> *@
 </div>
 </body>
 </html>

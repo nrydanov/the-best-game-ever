@@ -19,8 +19,11 @@ namespace BL
         private static ConcurrentDictionary<long, List<GameObject>> gameObjects;
         private static ConcurrentDictionary<string, long> userIds;
         private static ConcurrentDictionary<long, ConcurrentDictionary<string, bool>> events;
+        private static ConcurrentDictionary<long, DateTime> lastSeen;
 
-        public const long UpdateGameStateRate = 25;
+        private const long UpdateGameStateRate = 25;
+        private const long CheckIdleRate = 1000;
+        private const long IdleTimeout = 10;
         
         static GameBL()
         {
@@ -28,27 +31,58 @@ namespace BL
             gameObjects = new ConcurrentDictionary<long, List<GameObject>>();
             userIds = RestoreUserIds().Result;
             events = new ConcurrentDictionary<long, ConcurrentDictionary<string, bool>>();
+            lastSeen = new ConcurrentDictionary<long, DateTime>();
             
-            var timer = new Timer(UpdateGameStateRate);
-            timer.Elapsed += UpdateGameState;
-            timer.Start();
+            var state_timer = new Timer(UpdateGameStateRate);
+            state_timer.Elapsed += UpdateGameState;
+            state_timer.Start();
+
+            var idle_timer = new Timer(CheckIdleRate);
+            idle_timer.Elapsed += CheckIdle;
+            idle_timer.Start();
+        }
+
+        private static void CheckIdle(object sender, EventArgs args)
+        {
+            Parallel.ForEach(lastSeen, l =>
+            {
+                var p = l.Key;
+                var time = l.Value;
+                if (DateTime.Now.Subtract(time).TotalSeconds > IdleTimeout)
+                {
+                    Leave(p);
+                }
+                else
+                {
+                    Console.WriteLine($"{p}\' last action: {time}, now: {DateTime.Now}");
+                }
+            });
         }
 
         private static void UpdateGameState(object sender, EventArgs args)
         {
-            
-            foreach (var (user_id, actions) in events)
+
+            Parallel.ForEach(events, e =>
             {
+                var (user_id, actions) = e;
+
+                if (!connectedUsers.ContainsKey(user_id))
+                {
+                    // TODO: Maybe add more proper handle in such case
+                    return;
+                }
+
                 var info = connectedUsers[user_id];
                 if (!gameObjects.ContainsKey(info.GameId))
                 {
                     // TODO: Maybe add more proper handle in such case
                     return;
                 }
+
                 var objects = gameObjects[info.GameId];
                 var hero = info.Hero;
                 MoveSystem.Update(objects, actions, hero);
-            }
+            });
         }
 
         private static async Task<ConcurrentDictionary<long, UserInfo>> RestoreConnectedUsers()
@@ -89,7 +123,7 @@ namespace BL
             {
                 id = (await UserDAL.GetByName(hostName)).Id;
             }
-            catch(NullReferenceException)
+            catch (NullReferenceException)
             {
                 return false;
             }
@@ -145,21 +179,26 @@ namespace BL
             userIds.TryAdd(username, user_id);
             events.TryAdd(user_id, new ConcurrentDictionary<string, bool>());
 
-            return true;
+            lastSeen.TryAdd(user_id, DateTime.Now);
+;           return true;
         }
 
-        public static async Task<bool> Leave(string user)
+        public static void Leave(long userId)
         {
-            var player = await UserDAL.GetByName(user);
-
-            if (!connectedUsers.ContainsKey(player.Id))
+            if (!connectedUsers.ContainsKey(userId))
             {
-                return false;
+                return;
             }
 
-            connectedUsers.TryRemove(player.Id, out _);
-
-            return true;
+            var info = connectedUsers[userId];
+            var game_id = info.GameId;
+            
+            GameDAL.DropUser(userId);
+            
+            gameObjects[info.GameId].Remove(info.Hero);
+            connectedUsers.TryRemove(userId, out _);
+            events.TryRemove(userId, out _);
+            lastSeen.TryRemove(userId, out _);
         }
 
         public static async Task<IList<GameInfo>> GetGames()
@@ -201,7 +240,7 @@ namespace BL
             return mask[index] != '0';
         }
 
-        public static async void Update(string user, string mask)
+        public static void Update(string user, string mask)
         {
             var keys = new Dictionary<string, bool>();
             
@@ -219,11 +258,13 @@ namespace BL
 
             var actions = events[user_id];
 
-            foreach (var key_event in keys)
+            Parallel.ForEach(keys, keyEvent =>
             {
-                actions.AddOrUpdate(key_event.Key, 
-                    key_event.Value, (key, value) => key_event.Value);
-            }
+                actions.AddOrUpdate(keyEvent.Key,
+                    keyEvent.Value, (key, value) => keyEvent.Value);
+            });
+            
+            lastSeen.AddOrUpdate(user_id, DateTime.Now, (key, value) => DateTime.Now);
         }
     }
 }
