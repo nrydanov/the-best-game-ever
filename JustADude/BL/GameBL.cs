@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using System.Timers;
 using DAL.Sessions;
 using DAL.Users;
@@ -13,6 +14,7 @@ namespace BL
 {
     public static class GameBL
     {
+        
         private static ConcurrentDictionary<long, UserInfo> connectedUsers;
         private static ConcurrentDictionary<long, List<GameObject>> gameObjects;
         private static ConcurrentDictionary<string, long> userIds;
@@ -22,9 +24,9 @@ namespace BL
         
         static GameBL()
         {
-            connectedUsers = RestoreConnectedUsers();
+            connectedUsers = RestoreConnectedUsers().Result;
             gameObjects = new ConcurrentDictionary<long, List<GameObject>>();
-            userIds = RestoreUserIds();
+            userIds = RestoreUserIds().Result;
             events = new ConcurrentDictionary<long, ConcurrentBag<string>>();
             
             var timer = new Timer(UpdateGameStateRate);
@@ -52,9 +54,9 @@ namespace BL
             }
         }
 
-        private static ConcurrentDictionary<long, UserInfo> RestoreConnectedUsers()
+        private static async Task<ConcurrentDictionary<long, UserInfo>> RestoreConnectedUsers()
         {
-            var sessions = SessionDAL.GetSessionsInfo();
+            var sessions = await SessionDAL.GetSessionsInfo();
             var dict =
                     new ConcurrentDictionary<long, UserInfo>();
 
@@ -68,9 +70,9 @@ namespace BL
             return dict;
         }
 
-        private static ConcurrentDictionary<string, long> RestoreUserIds()
+        private static async Task<ConcurrentDictionary<string, long>> RestoreUserIds()
         {
-            var users = UserDAL.GetUsers();
+            var users = await UserDAL.GetUsers();
 
             var dict = new ConcurrentDictionary<string, long>();
 
@@ -82,7 +84,7 @@ namespace BL
             return dict;
         }
 
-        public static bool Create(String hostName)
+        public static async Task<bool> Create(String hostName)
         {
             long id;
             try
@@ -95,28 +97,29 @@ namespace BL
             }
             
             var game = new Game(id, DateTime.Now);
-            return GameDAL.Create(game);
+            return await GameDAL.Create(game);
         }
 
-        private static void LoadObjectsFromDB(long gameId)
+        private static async void LoadObjectsFromDB(long gameId)
         {
-            var objs = GameObjectBL.GetObjectsByGameId(gameId);
+            var objs = await GameObjectBL.GetObjectsByGameId(gameId);
             var heroes = objs.FindAll(e => e.ObjectType == "hero");
 
             for (int i = 0; i < heroes.Count; ++i)
             {
-                var user_id = SessionDAL.GetByHeroId(heroes[i].ObjectId).UserId;
+                var session = await SessionDAL.GetByHeroId(heroes[i].ObjectId);
+                var user_id = session.UserId;
                 connectedUsers[user_id].Hero = heroes[i];
             }
 
             gameObjects.TryAdd(gameId, objs);
         }
 
-        public static bool Join(string user, long gameId)
+        public static async Task<bool> Join(string username, long gameId)
         {
 
-            var player = UserDAL.GetByName(user);
-            var user_id = player.Id;
+            var user = await UserDAL.GetByName(username);
+            var user_id = user.Id;
 
             if (connectedUsers.ContainsKey(user_id))
             {
@@ -128,24 +131,24 @@ namespace BL
                 LoadObjectsFromDB(gameId);
             }
 
-            var hero_id = GameDAL.JoinUser(user_id, gameId);
+            var hero_id = await GameDAL.JoinUser(user_id, gameId);
 
-            var entity = GameObjectDAL.GetObjectById(hero_id);
+            var entity = await GameObjectDAL.GetObjectById(hero_id);
             var hero = new GameObject(entity);
             
-            hero.Username = user;
+            hero.Username = username;
 
             gameObjects[gameId].Add(hero);
-            connectedUsers.TryAdd(player.Id, new UserInfo(gameId, hero));
-            userIds.TryAdd(user, user_id);
+            connectedUsers.TryAdd(user.Id, new UserInfo(gameId, hero));
+            userIds.TryAdd(username, user_id);
             events.TryAdd(user_id, new ConcurrentBag<string>());
 
             return true;
         }
 
-        public static bool Leave(string user)
+        public static async Task<bool> Leave(string user)
         {
-            var player = UserDAL.GetByName(user);
+            var player = await UserDAL.GetByName(user);
 
             if (!connectedUsers.ContainsKey(player.Id))
             {
@@ -157,18 +160,18 @@ namespace BL
             return true;
         }
 
-        public static IList<GameInfo> GetGames()
+        public static async Task<IList<GameInfo>> GetGames()
         {
-            var games = GameDAL.GetGames();
+            var games = await GameDAL.GetGames();
 
             return games;
         }
 
-        public static List<GameObject> GetObjects(string user)
+        public static async Task<List<GameObject>> GetObjects(string user)
         {
             if (!userIds.ContainsKey(user))
             {
-                var player = UserDAL.GetByName(user);
+                var player = await UserDAL.GetByName(user);
                 userIds.TryAdd(user, player.Id);
                 events[player.Id] = new ConcurrentBag<string>();
             }
@@ -204,6 +207,4 @@ namespace BL
             }
         }
     }
-
-    
 }

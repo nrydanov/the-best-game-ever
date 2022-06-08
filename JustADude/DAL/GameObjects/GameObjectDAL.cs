@@ -1,36 +1,28 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
 
 namespace DAL.GameObjects
 {
     public static class GameObjectDAL
     {
-        public static List<GameObjectEnt> GetObjectsByGameId(long game_id)
+        public static async Task<List<GameObjectEnt>> GetObjectsByGameId(long gameId)
         {
             using (var context = new GameContext())
             {
-                var query = from o in context.GameObjectEnt
-                    where o.GameId == game_id
-                    select new GameObjectEnt(o.GameId,
-                        o.ObjectType,
-                        o.PosX,
-                        o.PosY, o.Id);
-                return query.ToList();
+                var result = 
+                    await context.GameObjectEnt.Where(e => e.GameId == gameId).ToListAsync();
+                return result;
             }
         }
 
-        public static GameObjectEnt GetObjectById(long id)
+        public static async Task<GameObjectEnt> GetObjectById(long id)
         {
             using (var context = new GameContext())
             {
-                var query = from o in context.GameObjectEnt
-                    where o.Id == id
-                    select new GameObjectEnt(o.GameId,
-                        o.ObjectType,
-                        o.PosX,
-                        o.PosY,
-                        o.Id);
-                return query.First();
+                var result = await context.GameObjectEnt.Where(e => e.Id == id).FirstAsync();
+                return result;
             }
         }
     }

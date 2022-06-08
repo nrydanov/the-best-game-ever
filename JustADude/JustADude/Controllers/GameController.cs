@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Diagnostics;
 using System.Threading.Tasks;
 using BL;
@@ -15,7 +14,6 @@ namespace JustADude.Controllers
     public class GameController : Controller
     {
         private readonly ILogger<HomeController> _logger;
-        private Dictionary<string, bool> keys = new Dictionary<string, bool>();
 
         public GameController(ILogger<HomeController> logger)
         {
@@ -54,16 +52,16 @@ namespace JustADude.Controllers
         }
 
         [HttpGet]
-        public void SubmitJoin(int gameId)
+        public async void SubmitJoin(int gameId)
         {
-            GameBL.Join(User.Identity.Name, gameId);
+            await GameBL.Join(User.Identity.Name, gameId);
         }
 
 
         [HttpGet]
-        public string List()
+        public async Task<string> List()
         {
-            var result = JsonConvert.SerializeObject(GameBL.GetGames());
+            var result = JsonConvert.SerializeObject(await GameBL.GetGames());
             return result;
         }
 
@@ -78,26 +76,32 @@ namespace JustADude.Controllers
             // TODO: Return to error page
             if (!User.Identity.IsAuthenticated)
                 return;
-
+            
+            var keys = new Dictionary<string, bool>();
             
             keys["ArrowUp"] = convertBitToFlag(mask, 0);
             keys["ArrowDown"] = convertBitToFlag(mask, 1);
             keys["ArrowRight"] = convertBitToFlag(mask, 2);
             keys["ArrowLeft"] = convertBitToFlag(mask, 3);
+            
             var name = User.Identity.Name;
             
-            Task.Run(() => GameBL.Update(name, keys));
+            
+            GameBL.Update(name, keys);
         }
 
         [HttpGet]
-        public string Update()
+        public async Task<string> Update()
         {
             // TODO: Return to error page
             if (!User.Identity.IsAuthenticated) 
                 return "";
 
-            var response_json = JsonConvert.SerializeObject(GameBL.GetObjects(User.Identity.Name));
-            return response_json;
+            var name = User.Identity.Name;
+
+            var objs = await GameBL.GetObjects(name);
+
+            return JsonConvert.SerializeObject(objs); 
         }
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None,

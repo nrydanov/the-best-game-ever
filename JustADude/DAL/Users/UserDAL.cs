@@ -1,20 +1,23 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using DAL.Sessions;
+using Microsoft.EntityFrameworkCore;
 
 namespace DAL.Users
 {
     public class UserDAL
     {
-        public static bool Create(User user)
+        public static async Task<bool> Create(User user)
         {
             using (var context = new GameContext())
             {
-                context.Add(user);
+                
                 try
                 {
-                    context.SaveChanges();
+                    await context.AddAsync(user);
+                    await context.SaveChangesAsync();
                     return true;
                 }
                 catch (InvalidOperationException)
@@ -24,7 +27,7 @@ namespace DAL.Users
             }
         }
 
-        public static User GetByName(string username)
+        public static async Task<User> GetByName(string username)
         {
             User user;
             using (var context = new GameContext())
@@ -32,22 +35,21 @@ namespace DAL.Users
                 var query = context.Users.Where(e => e.Username == username);
                 try
                 {
-                    user = query.First();
+                    user = await query.FirstAsync();
                 }
                 catch (InvalidOperationException)
                 {
                     user = null;
                 }
             }
-
             return user;
         }
         
-        public static List<User> GetUsers()
+        public static async Task<List<User>> GetUsers()
         {
             using (var context = new GameContext())
             {
-                return context.Users.ToList();
+                return await context.Users.ToListAsync();
             }
         }
     }

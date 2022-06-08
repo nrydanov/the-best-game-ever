@@ -71,7 +71,6 @@
                     this.backgroundPosition = position;
                     this.width = width;
                     this.height = height;
-                    this.initialized = false;
 
                     switch (this.type) {
                         case "stone":
@@ -114,7 +113,7 @@
                             gameObjects.push(gameObject);
 
                             gameObject.render();
-                        } else if (!gameObjects[i].initialized || gameObjects[i].y !== obj.PosY 
+                        } else if (gameObjects[i].y !== obj.PosY 
                                 || gameObjects[i].x !== obj.PosX) {
                             gameObjects[i].y = obj.PosY;
                             gameObjects[i].x = obj.PosX;
