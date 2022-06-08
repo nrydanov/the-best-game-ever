@@ -7,8 +7,8 @@ namespace BL.GameLogic.Systems
 {
     public static class MoveSystem
     {
-        public static ConcurrentDictionary<long, HeroProperties> properties =
-            new ConcurrentDictionary<long, HeroProperties>();
+        public static Dictionary<long, HeroProperties> properties =
+            new Dictionary<long, HeroProperties>();
 
         private const double Dx = 3;
         private const double Dy = 10;
@@ -30,30 +30,36 @@ namespace BL.GameLogic.Systems
             props.XDelta += -Math.Sign(props.XDelta) * InertiaAcceleration;
         }
 
-        private static void ApplyMove(HeroProperties heroProperties, ConcurrentBag<string> keys)
+        private static void ApplyMove(HeroProperties heroProperties, ConcurrentDictionary<string, bool> keys)
         {
-            foreach (var key in keys)
-                switch (key)
+            foreach (var key_pair in keys)
+            {
+                if (key_pair.Value)
                 {
-                    case "ArrowUp": // Up
-                        if (heroProperties.CanJump)
-                        {
-                            heroProperties.YDelta += Dy;
-                            heroProperties.CanJump = false;
-                        }
-                        break;
-                    case "ArrowDown": // Down
-                        // TODO: Can't in normal case, probably in future
-                        // heroProperties.YDelta -= Dy;
-                        break;
-                    case "ArrowRight": // Right
-                        heroProperties.XDelta += Dx;
-                        break;
-                    case "ArrowLeft": // Left
-                        heroProperties.XDelta -= Dx;
-                        break;
+                    switch (key_pair.Key)
+                    {
+                        case "ArrowUp": // Up
+                            if (heroProperties.CanJump)
+                            {
+                                heroProperties.YDelta += Dy;
+                                heroProperties.CanJump = false;
+                            }
+                            break;
+                        case "ArrowDown": // Down
+                            // TODO: Can't in normal case, probably in future
+                            // heroProperties.YDelta -= Dy;
+                            break;
+                        case "ArrowRight": // Right
+                            heroProperties.XDelta += Dx;
+                            break;
+                        case "ArrowLeft": // Left
+                            heroProperties.XDelta -= Dx;
+                            break;
+                    }
                 }
-
+                
+            }
+            
             var delta_x = Math.Min(Math.Abs(heroProperties.XDelta),
                 AccelerationLimitX);
             var delta_y = Math.Min(Math.Abs(heroProperties.YDelta),
@@ -63,7 +69,7 @@ namespace BL.GameLogic.Systems
             heroProperties.YDelta = Math.Sign(heroProperties.YDelta) * delta_y;
         }
 
-        private static void UpdateHeroState(HeroProperties heroProperties, ConcurrentBag<string> keys)
+        private static void UpdateHeroState(HeroProperties heroProperties, ConcurrentDictionary<string, bool> keys)
         {
             ApplyMove(heroProperties, keys);
             ApplyInertia(heroProperties);
@@ -71,7 +77,7 @@ namespace BL.GameLogic.Systems
         }
 
         public static void Update(List<GameObject> objects,
-            ConcurrentBag<string> keys, GameObject hero)
+            ConcurrentDictionary<string, bool> keys, GameObject hero)
         {
             if (!properties.ContainsKey(hero.ObjectId))
             {

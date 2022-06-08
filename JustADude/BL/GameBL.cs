@@ -18,7 +18,7 @@ namespace BL
         private static ConcurrentDictionary<long, UserInfo> connectedUsers;
         private static ConcurrentDictionary<long, List<GameObject>> gameObjects;
         private static ConcurrentDictionary<string, long> userIds;
-        private static ConcurrentDictionary<long, ConcurrentBag<string>> events;
+        private static ConcurrentDictionary<long, ConcurrentDictionary<string, bool>> events;
 
         public const long UpdateGameStateRate = 25;
         
@@ -27,7 +27,7 @@ namespace BL
             connectedUsers = RestoreConnectedUsers().Result;
             gameObjects = new ConcurrentDictionary<long, List<GameObject>>();
             userIds = RestoreUserIds().Result;
-            events = new ConcurrentDictionary<long, ConcurrentBag<string>>();
+            events = new ConcurrentDictionary<long, ConcurrentDictionary<string, bool>>();
             
             var timer = new Timer(UpdateGameStateRate);
             timer.Elapsed += UpdateGameState;
@@ -100,7 +100,7 @@ namespace BL
             return await GameDAL.Create(game);
         }
 
-        private static async void LoadObjectsFromDB(long gameId)
+        private static async Task<bool> LoadObjectsFromDB(long gameId)
         {
             var objs = await GameObjectBL.GetObjectsByGameId(gameId);
             var heroes = objs.FindAll(e => e.ObjectType == "hero");
@@ -112,7 +112,7 @@ namespace BL
                 connectedUsers[user_id].Hero = heroes[i];
             }
 
-            gameObjects.TryAdd(gameId, objs);
+            return gameObjects.TryAdd(gameId, objs);
         }
 
         public static async Task<bool> Join(string username, long gameId)
@@ -128,7 +128,7 @@ namespace BL
 
             if (!gameObjects.ContainsKey(gameId))
             {
-                LoadObjectsFromDB(gameId);
+                await LoadObjectsFromDB(gameId);
             }
 
             var hero_id = await GameDAL.JoinUser(user_id, gameId);
@@ -141,7 +141,7 @@ namespace BL
             gameObjects[gameId].Add(hero);
             connectedUsers.TryAdd(user.Id, new UserInfo(gameId, hero));
             userIds.TryAdd(username, user_id);
-            events.TryAdd(user_id, new ConcurrentBag<string>());
+            events.TryAdd(user_id, new ConcurrentDictionary<string, bool>());
 
             return true;
         }
@@ -173,37 +173,52 @@ namespace BL
             {
                 var player = await UserDAL.GetByName(user);
                 userIds.TryAdd(user, player.Id);
-                events[player.Id] = new ConcurrentBag<string>();
             }
             
             var user_id = userIds[user];
+
+            if (!connectedUsers.ContainsKey(user_id))
+            {
+                // TODO: Maybe more proper reaction in such case
+                return new List<GameObject>();
+            }
+            
             var info = connectedUsers[user_id];
             var game_id = info.GameId;
             
             if (!gameObjects.ContainsKey(game_id))
             {
-                LoadObjectsFromDB(game_id);
+                await LoadObjectsFromDB(game_id);
             }
             
             return gameObjects[game_id];
         }
-
-        public static void Update(string user, Dictionary<string, bool> keys)
+        
+        private static bool convertBitToFlag(string mask, int index)
         {
+            return mask[index] != '0';
+        }
+
+        public static void Update(string user, string mask)
+        {
+            var keys = new Dictionary<string, bool>();
+            
+            keys["ArrowUp"] = convertBitToFlag(mask, 0);
+            keys["ArrowDown"] = convertBitToFlag(mask, 1);
+            keys["ArrowRight"] = convertBitToFlag(mask, 2);
+            keys["ArrowLeft"] = convertBitToFlag(mask, 3);
+
             var user_id = userIds[user];
 
             if (!events.ContainsKey(user_id))
             {
-                events.TryAdd(user_id, new ConcurrentBag<string>());
+                events.TryAdd(user_id, new ConcurrentDictionary<string, bool>());
             }
-            events[user_id].Clear();
 
             foreach (var key_event in keys)
             {
-                if (key_event.Value)
-                {
-                    events[user_id].Add(key_event.Key);    
-                }
+                events[user_id].AddOrUpdate(key_event.Key, 
+                    key_event.Value, (key, value) => key_event.Value);
             }
         }
     }

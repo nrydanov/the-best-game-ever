@@ -65,29 +65,16 @@ namespace JustADude.Controllers
             return result;
         }
 
-        private bool convertBitToFlag(string mask, int index)
-        {
-            return mask[index] != '0';
-        }
-        
         [HttpPost]
-        public void Update(string mask)
+        public async void Update(string mask)
         {
             // TODO: Return to error page
             if (!User.Identity.IsAuthenticated)
                 return;
-            
-            var keys = new Dictionary<string, bool>();
-            
-            keys["ArrowUp"] = convertBitToFlag(mask, 0);
-            keys["ArrowDown"] = convertBitToFlag(mask, 1);
-            keys["ArrowRight"] = convertBitToFlag(mask, 2);
-            keys["ArrowLeft"] = convertBitToFlag(mask, 3);
-            
+
             var name = User.Identity.Name;
             
-            
-            GameBL.Update(name, keys);
+            GameBL.Update(name, mask);
         }
 
         [HttpGet]
