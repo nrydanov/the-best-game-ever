@@ -19,7 +19,8 @@
                     }
                 });
                 $(".clickable-row").click(function () {
-                    $.get('/Game/SubmitJoin', { "game_id": $(this)[0].children[0].textContent }, function (data) {
+                    console.log("Connecting to " + $(this)[0].children[0].textContent);
+                    $.get('/Game/SubmitJoin', { "gameId": $(this)[0].children[0].textContent }, function (data) {
                         window.location.replace("/Game/Start");
                     })
                     

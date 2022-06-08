@@ -1,5 +1,5 @@
 ﻿@{
-    ViewData["Title"] = "Create game Page";
+    ViewData["Title"] = "Game Page";
     Layout = null;
     var ImageFolder = "../im/";
 }
@@ -18,15 +18,42 @@
     ">
 <script>
 
-            var keysBatch = [];
-            var gameObjects = [];
-            var frame = 0;
-
+            let keysPressed = {"ArrowUp" : 0, "ArrowDown" : 0, "ArrowRight" : 0, "ArrowLeft" : 0};
+            let gameObjects = [];
+            let availableKeys = ["ArrowUp", "ArrowDown", "ArrowRight", "ArrowLeft"];
+            
+            function getKeyBit(key) {
+                if (keysPressed[key]) {
+                    return "1";
+                }
+                else {
+                    return "0";
+                }
+            }
+            
+            function keySend() {
+                    let keyMask = "";
+                    availableKeys.forEach(key => keyMask += getKeyBit(key));
+                    $.post("/Game/Update", {"mask" : keyMask});
+            }
 
             document.addEventListener('keydown', function(event) {
-                console.log('Key: ', event.key);
-                console.log('keyCode: ', event.keyCode);
-                keysBatch.push(event.keyCode);
+                if (availableKeys.indexOf(event.key) === -1) {
+                    return;
+                }
+                
+                if (keysPressed[event.key] === 0) {
+                    keysPressed[event.key] = 1;    
+                    keySend();
+                }
+            });
+            
+            document.addEventListener("keyup", function(event) {
+                if (availableKeys.indexOf(event.key) === -1) {
+                    return;
+                }
+                keysPressed[event.key] = 0;
+                keySend();
             });
 
             class GameObject {
@@ -44,7 +71,6 @@
                     this.backgroundPosition = position;
                     this.width = width;
                     this.height = height;
-                    this.initialized = true;
 
                     switch (this.type) {
                         case "stone":
@@ -77,30 +103,29 @@
             }
 
             function render() {
-                $.get("/Game/Update", { "json": JSON.stringify(keysBatch) }, function (data) {
-                    @* console.log("zhopa") *@
+                $.get("/Game/Update", function (data) {
                     let objects = JSON.parse(data);
-                    for (i = 0; i < objects.length; i++) {
+                    for (let i = 0; i < objects.length; i++) {
                         let obj = objects[i];
                         let gameObject;
-                        if (gameObjects.find(e => e.id == obj.Id) == undefined) {
+                        if (gameObjects.find(e => e.id === obj.Id) === undefined) {
                             gameObject = new GameObject(obj.ObjectType, obj.PosY, obj.PosX, obj.Id, obj.Width, obj.Height);
                             gameObjects.push(gameObject);
-                        } else {
-                            gameObjects[i].type = obj.ObjectType;
+
+                            gameObject.render();
+                        } else if (gameObjects[i].y !== obj.PosY 
+                                || gameObjects[i].x !== obj.PosX) {
                             gameObjects[i].y = obj.PosY;
                             gameObjects[i].x = obj.PosX;
-                            gameObjects[i].id = obj.Id;
+
+                            gameObjects[i].render();
                         }
                     }
-                });
-                
-                for (i = 0; i < gameObjects.length; i++) {
-                    gameObjects[i].render();
-                }
-                keysBatch = [];
+                });   
             }
-            var renderSystem = setInterval(render, 16);
+            
+            let renderSystem = setInterval(render, 25);
+            
         </script>
 <div style="display: flex; justify-content: flex-end">
     <button style="

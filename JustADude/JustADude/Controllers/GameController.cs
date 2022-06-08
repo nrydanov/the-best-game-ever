@@ -33,9 +33,9 @@ namespace JustADude.Controllers
         }
 
         [HttpGet]
-        public IActionResult Create()
+        public async Task<IActionResult> Create()
         {
-            GameBL.Create(User.Identity.Name);
+            await GameBL.Create(User.Identity.Name);
             return RedirectToAction("Start", "Game");
         }
 
@@ -52,32 +52,43 @@ namespace JustADude.Controllers
         }
 
         [HttpGet]
-        public void SubmitJoin(int gameId)
+        public async void SubmitJoin(int gameId)
         {
-            GameBL.Join(User.Identity.Name, gameId);
+            await GameBL.Join(User.Identity.Name, gameId);
         }
 
 
         [HttpGet]
-        public string List()
+        public async Task<string> List()
         {
-            var result = JsonConvert.SerializeObject(GameBL.GetGames());
+            var result = JsonConvert.SerializeObject(await GameBL.GetGames());
             return result;
         }
 
-        [HttpGet]
-        public string Update(string json)
+        [HttpPost]
+        public async void Update(string mask)
         {
-            if (!User.Identity.IsAuthenticated) return "";
+            // TODO: Return to error page
+            if (!User.Identity.IsAuthenticated)
+                return;
+            
+            var name = User.Identity.Name;
+            
+            GameBL.Update(name, mask);
+        }
 
-            if (json == null) return "";
+        [HttpGet]
+        public async Task<string> Update()
+        {
+            // TODO: Return to error page
+            if (!User.Identity.IsAuthenticated) 
+                return "";
 
-            IList<int> keys = JsonConvert.DeserializeObject<List<int>>(json);
-            var objs = GameBL.Update(User.Identity.Name, keys);
+            var name = User.Identity.Name;
 
-            var response_json = JsonConvert.SerializeObject(objs);
+            var objs = await GameBL.GetObjects(name);
 
-            return response_json;
+            return JsonConvert.SerializeObject(objs); 
         }
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None,

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using BL.Dto;
 
@@ -29,25 +30,36 @@ namespace BL.GameLogic.Systems
             props.XDelta += -Math.Sign(props.XDelta) * InertiaAcceleration;
         }
 
-        private static void ApplyMove(HeroProperties heroProperties, IList<int> keys)
+        private static void ApplyMove(HeroProperties heroProperties, ConcurrentDictionary<string, bool> keys)
         {
-            foreach (var key in keys)
-                switch (key)
+            foreach (var key_pair in keys)
+            {
+                if (key_pair.Value)
                 {
-                    case 38: // Up
-                        heroProperties.YDelta += Dy;
-                        break;
-                    case 40: // Down
-                        heroProperties.YDelta -= Dy;
-                        break;
-                    case 39: // Right
-                        heroProperties.XDelta += Dx;
-                        break;
-                    case 37: // Left
-                        heroProperties.XDelta -= Dx;
-                        break;
+                    switch (key_pair.Key)
+                    {
+                        case "ArrowUp": // Up
+                            if (heroProperties.CanJump)
+                            {
+                                heroProperties.YDelta += Dy;
+                                heroProperties.CanJump = false;
+                            }
+                            break;
+                        case "ArrowDown": // Down
+                            // TODO: Can't in normal case, probably in future
+                            // heroProperties.YDelta -= Dy;
+                            break;
+                        case "ArrowRight": // Right
+                            heroProperties.XDelta += Dx;
+                            break;
+                        case "ArrowLeft": // Left
+                            heroProperties.XDelta -= Dx;
+                            break;
+                    }
                 }
-
+                
+            }
+            
             var delta_x = Math.Min(Math.Abs(heroProperties.XDelta),
                 AccelerationLimitX);
             var delta_y = Math.Min(Math.Abs(heroProperties.YDelta),
@@ -57,7 +69,7 @@ namespace BL.GameLogic.Systems
             heroProperties.YDelta = Math.Sign(heroProperties.YDelta) * delta_y;
         }
 
-        private static void UpdateHeroState(HeroProperties heroProperties, IList<int> keys)
+        private static void UpdateHeroState(HeroProperties heroProperties, ConcurrentDictionary<string, bool> keys)
         {
             ApplyMove(heroProperties, keys);
             ApplyInertia(heroProperties);
@@ -65,12 +77,12 @@ namespace BL.GameLogic.Systems
         }
 
         public static void Update(List<GameObject> objects,
-            IList<int> keys, GameObject hero)
+            ConcurrentDictionary<string, bool> keys, GameObject hero)
         {
             if (!properties.ContainsKey(hero.ObjectId))
             {
                 var props = new HeroProperties();
-                properties.Add(hero.ObjectId, props);
+                properties.TryAdd(hero.ObjectId, props);
             }
 
             var hero_properties = properties[hero.ObjectId];
@@ -78,7 +90,6 @@ namespace BL.GameLogic.Systems
             UpdateHeroState(hero_properties, keys);
 
             CollisionSystem.Update(hero, objects);
-
             hero.PosX += (long)hero_properties.XDelta;
             hero.PosY += (long)hero_properties.YDelta;
         }
@@ -89,10 +100,13 @@ namespace BL.GameLogic.Systems
             {
                 XDelta = 0;
                 YDelta = 0;
+                CanJump = true;
             }
 
             public double XDelta { get; set; }
             public double YDelta { get; set; }
+            
+            public bool CanJump { get; set; }
         }
     }
 }

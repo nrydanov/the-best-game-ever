@@ -48,7 +48,7 @@ namespace JustADude.Controllers
         [HttpPost]
         public async Task<IActionResult> Auth(string name, string password)
         {
-            if (AuthBL.Authorize(name, password))
+            if (await AuthBL.Authorize(name, password))
             {
                 await Authenticate(name);
 

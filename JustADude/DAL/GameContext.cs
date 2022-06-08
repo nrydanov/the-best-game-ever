@@ -1,9 +1,9 @@
-﻿using System;
+﻿using Microsoft.EntityFrameworkCore;
+
 using DAL.GameObjects;
 using DAL.Games;
-using DAL.Players;
 using DAL.Sessions;
-using Microsoft.EntityFrameworkCore;
+using DAL.Users;
 
 namespace DAL
 {
@@ -11,7 +11,7 @@ namespace DAL
     {
 
         public virtual DbSet<Game> Games { get; set; } = null!;
-        public virtual DbSet<Player> Players { get; set; } = null!;
+        public virtual DbSet<User> Users { get; set; } = null!;
         public virtual DbSet<Session> Sessions { get; set; } = null!;
         public virtual DbSet<GameObjectEnt> GameObjectEnt { get; set; } = null!;
 
@@ -37,9 +37,9 @@ namespace DAL
                 entity.Property(e => e.Created).HasColumnType("datetime");
             });
 
-            modelBuilder.Entity<Player>(entity =>
+            modelBuilder.Entity<User>(entity =>
             {
-                entity.ToTable("Players");
+                entity.ToTable("Users");
 
                 entity.Property(f => f.Id).ValueGeneratedOnAdd();
                 

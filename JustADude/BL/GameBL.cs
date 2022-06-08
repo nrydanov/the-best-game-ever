@@ -1,45 +1,93 @@
 ﻿using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
-
+using System.Threading.Tasks;
+using System.Timers;
 using DAL.Sessions;
-using DAL.Players;
+using DAL.Users;
 using DAL.Games;
 using DAL.GameObjects;
-using BL.GameLogic.Systems;
 using BL.Dto;
+using BL.GameLogic.Systems;
 
 namespace BL
 {
     public static class GameBL
     {
-        static ConcurrentDictionary<long, PlayerInfo> connectedUsers =
-                RestoreConnectedUsers();
+        
+        private static ConcurrentDictionary<long, UserInfo> connectedUsers;
+        private static ConcurrentDictionary<long, List<GameObject>> gameObjects;
+        private static ConcurrentDictionary<string, long> userIds;
+        private static ConcurrentDictionary<long, ConcurrentDictionary<string, bool>> events;
 
-        static ConcurrentDictionary<long, List<GameObject>> gameObjects =
-                new ConcurrentDictionary<long, List<GameObject>>();
-
-
-        private static ConcurrentDictionary<long, PlayerInfo> RestoreConnectedUsers()
+        public const long UpdateGameStateRate = 25;
+        
+        static GameBL()
         {
-            var sessions = SessionDAL.GetSessions();
-            var dict =
-                    new ConcurrentDictionary<long, PlayerInfo>();
+            connectedUsers = RestoreConnectedUsers().Result;
+            gameObjects = new ConcurrentDictionary<long, List<GameObject>>();
+            userIds = RestoreUserIds().Result;
+            events = new ConcurrentDictionary<long, ConcurrentDictionary<string, bool>>();
+            
+            var timer = new Timer(UpdateGameStateRate);
+            timer.Elapsed += UpdateGameState;
+            timer.Start();
+        }
 
-            foreach (var s in sessions)
+        private static void UpdateGameState(object sender, EventArgs args)
+        {
+            
+            foreach (var (user_id, actions) in events)
             {
-                dict.TryAdd(s.UserId, new PlayerInfo(s.GameId, s.HeroId));
+                var info = connectedUsers[user_id];
+                if (!gameObjects.ContainsKey(info.GameId))
+                {
+                    // TODO: Maybe add more proper handle in such case
+                    return;
+                }
+                var objects = gameObjects[info.GameId];
+                var hero = info.Hero;
+                MoveSystem.Update(objects, actions, hero);
+            }
+        }
+
+        private static async Task<ConcurrentDictionary<long, UserInfo>> RestoreConnectedUsers()
+        {
+            var sessions = await SessionDAL.GetSessionsInfo();
+            var dict =
+                    new ConcurrentDictionary<long, UserInfo>();
+
+            for (int i = 0; i < sessions.Count; ++i)
+            {
+                var s = sessions[i];
+
+                dict.TryAdd(s.UserId, new UserInfo(s.GameId, null));
             }
             
             return dict;
-        } 
-        
-        public static bool Create(String hostName)
+        }
+
+        private static async Task<ConcurrentDictionary<string, long>> RestoreUserIds()
+        {
+            var users = await UserDAL.GetUsers();
+
+            var dict = new ConcurrentDictionary<string, long>();
+
+            for (int i = 0; i < users.Count; ++i)
+            {
+                var user = users[i];
+                dict.TryAdd(user.Username, user.Id);
+            }
+
+            return dict;
+        }
+
+        public static async Task<bool> Create(String hostName)
         {
             long id;
             try
             {
-                id = PlayerDAL.GetByName(hostName).Id;
+                id = (await UserDAL.GetByName(hostName)).Id;
             }
             catch(NullReferenceException)
             {
@@ -47,47 +95,62 @@ namespace BL
             }
             
             var game = new Game(id, DateTime.Now);
-            return GameDAL.Create(game);
+            return await GameDAL.Create(game);
         }
 
-        private static void LoadObjectsFromDB(long gameId)
+        private static async Task<bool> LoadObjectsFromDB(long gameId)
         {
-            Console.WriteLine("Loading objects from DB");
-            var objs = GameObjectBL.GetObjectsByGameId(gameId);
-            gameObjects.TryAdd(gameId, objs);
+            var objs = await GameObjectBL.GetObjectsByGameId(gameId);
+            // TODO: Remove O(N)
+            var heroes = objs.FindAll(e => e.ObjectType == "hero");
+            for (int i = 0; i < heroes.Count; ++i)
+            {
+                var hero = heroes[i];
+                var session = await SessionDAL.GetByHeroId(hero.ObjectId);
+                var user_id = session.UserId;
+                var user = await UserDAL.GetById(user_id);
+                hero.Username = user.Username;
+                
+                connectedUsers[user_id].Hero = hero;
+            }
+
+            return gameObjects.TryAdd(gameId, objs);
         }
 
-        public static bool Join(string user, long gameId)
+        public static async Task<bool> Join(string username, long gameId)
         {
 
-            var player = PlayerDAL.GetByName(user);
+            var user = await UserDAL.GetByName(username);
+            var user_id = user.Id;
 
-            if (connectedUsers.ContainsKey(player.Id))
+            if (connectedUsers.ContainsKey(user_id))
             {
                 return false;
             }
 
             if (!gameObjects.ContainsKey(gameId))
             {
-                LoadObjectsFromDB(gameId);
+                await LoadObjectsFromDB(gameId);
             }
 
-            var hero_id = GameDAL.JoinUser(player.Id, gameId);
+            var hero_id = await GameDAL.JoinUser(user_id, gameId);
 
-            var entity = GameObjectDAL.GetObjectById(hero_id);
-
+            var entity = await GameObjectDAL.GetObjectById(hero_id);
             var hero = new GameObject(entity);
-            hero.Username = user;
+            
+            hero.Username = username;
 
             gameObjects[gameId].Add(hero);
-            connectedUsers.TryAdd(player.Id, new PlayerInfo(gameId, hero_id));
+            connectedUsers.TryAdd(user.Id, new UserInfo(gameId, hero));
+            userIds.TryAdd(username, user_id);
+            events.TryAdd(user_id, new ConcurrentDictionary<string, bool>());
 
             return true;
         }
 
-        public static bool Leave(String user)
+        public static async Task<bool> Leave(string user)
         {
-            var player = PlayerDAL.GetByName(user);
+            var player = await UserDAL.GetByName(user);
 
             if (!connectedUsers.ContainsKey(player.Id))
             {
@@ -99,39 +162,68 @@ namespace BL
             return true;
         }
 
-        public static IList<GameInfo> GetGames()
+        public static async Task<IList<GameInfo>> GetGames()
         {
-            var games = GameDAL.GetGames();
+            var games = await GameDAL.GetGames();
 
             return games;
         }
 
-        public static List<GameObject> Update(String user, IList<int> keys)
+        public static async Task<List<GameObject>> GetObjects(string user)
         {
-            var player = PlayerDAL.GetByName(user);
-
-            if (!connectedUsers.ContainsKey(player.Id))
+            if (!userIds.ContainsKey(user))
             {
-                Console.WriteLine("Attempt to update a game for not connected user");
-
-                return new List <GameObject>();
+                var player = await UserDAL.GetByName(user);
+                userIds.TryAdd(user, player.Id);
             }
+            
+            var user_id = userIds[user];
 
-            var info = connectedUsers[player.Id];
+            if (!connectedUsers.ContainsKey(user_id))
+            {
+                // TODO: Maybe more proper reaction in such case
+                return new List<GameObject>();
+            }
+            
+            var info = connectedUsers[user_id];
             var game_id = info.GameId;
-
+            
             if (!gameObjects.ContainsKey(game_id))
             {
-                LoadObjectsFromDB(game_id);
+                await LoadObjectsFromDB(game_id);
+            }
+            
+            return gameObjects[game_id];
+        }
+        
+        private static bool convertBitToFlag(string mask, int index)
+        {
+            return mask[index] != '0';
+        }
+
+        public static async void Update(string user, string mask)
+        {
+            var keys = new Dictionary<string, bool>();
+            
+            keys["ArrowUp"] = convertBitToFlag(mask, 0);
+            keys["ArrowDown"] = convertBitToFlag(mask, 1);
+            keys["ArrowRight"] = convertBitToFlag(mask, 2);
+            keys["ArrowLeft"] = convertBitToFlag(mask, 3);
+
+            var user_id = userIds[user];
+
+            if (!events.ContainsKey(user_id))
+            {
+                events.TryAdd(user_id, new ConcurrentDictionary<string, bool>());
             }
 
-            var objects = gameObjects[game_id];
-            var hero = objects.Find(e => e.ObjectId == info.HeroId);
+            var actions = events[user_id];
 
-            MoveSystem.Update(objects, keys, hero);
-            return objects;
+            foreach (var key_event in keys)
+            {
+                actions.AddOrUpdate(key_event.Key, 
+                    key_event.Value, (key, value) => key_event.Value);
+            }
         }
     }
-
-    
 }
