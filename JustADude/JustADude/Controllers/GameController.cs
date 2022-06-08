@@ -33,9 +33,9 @@ namespace JustADude.Controllers
         }
 
         [HttpGet]
-        public IActionResult Create()
+        public async Task<IActionResult> Create()
         {
-            GameBL.Create(User.Identity.Name);
+            await GameBL.Create(User.Identity.Name);
             return RedirectToAction("Start", "Game");
         }
 
