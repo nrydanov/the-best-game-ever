@@ -39,9 +39,10 @@ namespace JustADude.Controllers
         }
 
         [HttpPost]
-        public IActionResult Register(string name, string password)
+        public async Task<IActionResult> Register(string name, string password)
         {
-            if (RegisterBL.RegisterPlayer(name, password)) return RedirectToAction("Index", "Home");
+            if (await RegisterBL.RegisterPlayer(name, password)) 
+                return RedirectToAction("Index", "Home");
 
             return RedirectToAction("Register", "Home");
         }

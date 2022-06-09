@@ -5,14 +5,13 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <None Remove="Controllers\"/>
-        <None Remove="Views\Game\"/>
-        <None Remove="Newtonsoft.Json"/>
+        <None Remove="Controllers\" />
+        <None Remove="Views\Game\" />
+        <None Remove="Newtonsoft.Json" />
     </ItemGroup>
     <ItemGroup>
-        <Folder Include="Controllers\"/>
-        <Folder Include="Views\Game\"/>
-        <Folder Include="wwwroot\images\"/>
+        <Folder Include="Controllers\" />
+        <Folder Include="Views\Game\" />
     </ItemGroup>
     <ItemGroup>
         <ProjectReference Include="..\BL\BL.csproj">
@@ -23,6 +22,6 @@
         </ProjectReference>
     </ItemGroup>
     <ItemGroup>
-        <PackageReference Include="Newtonsoft.Json" Version="13.0.1"/>
+        <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
     </ItemGroup>
 </Project>
