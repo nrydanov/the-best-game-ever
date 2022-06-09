@@ -1,13 +1,15 @@
-﻿using BL.Misc;
+﻿using System.Threading.Tasks;
+
+using BL.Misc;
 using DAL.Users;
 
 namespace BL
 {
     public static class RegisterBL
     {
-        public static bool RegisterPlayer(string username, string password)
+        public static async Task<bool> RegisterPlayer(string username, string password)
         {
-            var existing_player = UserDAL.GetByName(username);
+            var existing_player = await UserDAL.GetByName(username);
 
             if (existing_player != null)
             {
@@ -16,7 +18,7 @@ namespace BL
 
             var player = new User(username, Hash.GetStringHash(password));
 
-            UserDAL.Create(player);
+            await UserDAL.Create(player);
             return true;
         }
     }

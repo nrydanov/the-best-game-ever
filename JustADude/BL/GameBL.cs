@@ -3,6 +3,7 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using System.Timers;
+
 using DAL.Sessions;
 using DAL.Users;
 using DAL.Games;
@@ -51,10 +52,6 @@ namespace BL
                 if (DateTime.Now.Subtract(time).TotalSeconds > IdleTimeout)
                 {
                     Leave(p);
-                }
-                else
-                {
-                    Console.WriteLine($"{p}\' last action: {time}, now: {DateTime.Now}");
                 }
             });
         }
@@ -178,8 +175,8 @@ namespace BL
             connectedUsers.TryAdd(user.Id, new UserInfo(gameId, hero));
             userIds.TryAdd(username, user_id);
             events.TryAdd(user_id, new ConcurrentDictionary<string, bool>());
-
             lastSeen.TryAdd(user_id, DateTime.Now);
+          
 ;           return true;
         }
 

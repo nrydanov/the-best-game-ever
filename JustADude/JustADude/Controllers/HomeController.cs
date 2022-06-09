@@ -2,12 +2,13 @@
 using System.Diagnostics;
 using System.Security.Claims;
 using System.Threading.Tasks;
-using BL;
-using JustADude.Models;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+
+using BL;
+using JustADude.Models;
 
 namespace JustADude.Controllers
 {
@@ -38,9 +39,10 @@ namespace JustADude.Controllers
         }
 
         [HttpPost]
-        public IActionResult Register(string name, string password)
+        public async Task<IActionResult> Register(string name, string password)
         {
-            if (RegisterBL.RegisterPlayer(name, password)) return RedirectToAction("Index", "Home");
+            if (await RegisterBL.RegisterPlayer(name, password)) 
+                return RedirectToAction("Index", "Home");
 
             return RedirectToAction("Register", "Home");
         }

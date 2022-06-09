@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+
 using BL.Dto;
 
 namespace BL.GameLogic.Systems

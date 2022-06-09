@@ -3,12 +3,12 @@
 }
 
 <form method="post">
-    <div class="text-center">
-        <h1 class="display-4">Auth</h1>
-        <p>
-            Login: <input name="name"/> <br/>
-            Password: <input name="password"/> <br/>
-            <button>Submit</button>
-        </p>
+    <div class="form-container">
+            <label for="name"><b>Username</b></label>
+            <input id="name" type="text" placeholder="Enter Username" name="name" required>
+
+            <label for="password"><b>Password</b></label>
+            <input id="password" type="password" placeholder="Enter Password" name="password" required>
+            <button type="submit">Login</button>
     </div>
 </form>
