@@ -176,7 +176,7 @@ namespace BL
             userIds.TryAdd(username, user_id);
             events.TryAdd(user_id, new ConcurrentDictionary<string, bool>());
             lastSeen.TryAdd(user_id, DateTime.Now);
-            
+          
 ;           return true;
         }
 
