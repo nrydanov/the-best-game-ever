@@ -2,12 +2,13 @@
 using System.Diagnostics;
 using System.Security.Claims;
 using System.Threading.Tasks;
-using BL;
-using JustADude.Models;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+
+using BL;
+using JustADude.Models;
 
 namespace JustADude.Controllers
 {

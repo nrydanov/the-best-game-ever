@@ -2,9 +2,10 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
+
 using DAL.GameObjects;
 using DAL.Sessions;
-using Microsoft.EntityFrameworkCore;
 
 namespace DAL.Games
 {
