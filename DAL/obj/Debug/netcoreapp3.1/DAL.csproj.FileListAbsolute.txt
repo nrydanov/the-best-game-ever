@@ -1,0 +1,10 @@
+/Users/wrongway/Documents/dev/game/JustADude/DAL/bin/Debug/netcoreapp3.1/DAL.deps.json
+/Users/wrongway/Documents/dev/game/JustADude/DAL/bin/Debug/netcoreapp3.1/DAL.dll
+/Users/wrongway/Documents/dev/game/JustADude/DAL/bin/Debug/netcoreapp3.1/DAL.pdb
+/Users/wrongway/Documents/dev/game/JustADude/DAL/obj/Debug/netcoreapp3.1/DAL.GeneratedMSBuildEditorConfig.editorconfig
+/Users/wrongway/Documents/dev/game/JustADude/DAL/obj/Debug/netcoreapp3.1/DAL.AssemblyInfoInputs.cache
+/Users/wrongway/Documents/dev/game/JustADude/DAL/obj/Debug/netcoreapp3.1/DAL.AssemblyInfo.cs
+/Users/wrongway/Documents/dev/game/JustADude/DAL/obj/Debug/netcoreapp3.1/DAL.csproj.CoreCompileInputs.cache
+/Users/wrongway/Documents/dev/game/JustADude/DAL/obj/Debug/netcoreapp3.1/DAL.dll
+/Users/wrongway/Documents/dev/game/JustADude/DAL/obj/Debug/netcoreapp3.1/DAL.pdb
+/Users/wrongway/Documents/dev/game/JustADude/DAL/obj/Debug/netcoreapp3.1/DAL.csproj.AssemblyReference.cache

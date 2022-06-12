@@ -1,0 +1,12 @@
+/Users/wrongway/Documents/dev/game/JustADude/DAL/bin/Debug/net6.0/DAL.deps.json
+/Users/wrongway/Documents/dev/game/JustADude/DAL/bin/Debug/net6.0/DAL.dll
+/Users/wrongway/Documents/dev/game/JustADude/DAL/bin/Debug/net6.0/ref/DAL.dll
+/Users/wrongway/Documents/dev/game/JustADude/DAL/bin/Debug/net6.0/DAL.pdb
+/Users/wrongway/Documents/dev/game/JustADude/DAL/obj/Debug/net6.0/DAL.csproj.AssemblyReference.cache
+/Users/wrongway/Documents/dev/game/JustADude/DAL/obj/Debug/net6.0/DAL.GeneratedMSBuildEditorConfig.editorconfig
+/Users/wrongway/Documents/dev/game/JustADude/DAL/obj/Debug/net6.0/DAL.AssemblyInfoInputs.cache
+/Users/wrongway/Documents/dev/game/JustADude/DAL/obj/Debug/net6.0/DAL.AssemblyInfo.cs
+/Users/wrongway/Documents/dev/game/JustADude/DAL/obj/Debug/net6.0/DAL.csproj.CoreCompileInputs.cache
+/Users/wrongway/Documents/dev/game/JustADude/DAL/obj/Debug/net6.0/DAL.dll
+/Users/wrongway/Documents/dev/game/JustADude/DAL/obj/Debug/net6.0/ref/DAL.dll
+/Users/wrongway/Documents/dev/game/JustADude/DAL/obj/Debug/net6.0/DAL.pdb

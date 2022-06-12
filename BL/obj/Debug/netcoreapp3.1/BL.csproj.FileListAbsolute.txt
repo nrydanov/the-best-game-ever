@@ -1,0 +1,13 @@
+/Users/wrongway/Documents/dev/game/JustADude/BL/bin/Debug/netcoreapp3.1/BL.deps.json
+/Users/wrongway/Documents/dev/game/JustADude/BL/bin/Debug/netcoreapp3.1/BL.dll
+/Users/wrongway/Documents/dev/game/JustADude/BL/bin/Debug/netcoreapp3.1/BL.pdb
+/Users/wrongway/Documents/dev/game/JustADude/BL/bin/Debug/netcoreapp3.1/DAL.dll
+/Users/wrongway/Documents/dev/game/JustADude/BL/bin/Debug/netcoreapp3.1/DAL.pdb
+/Users/wrongway/Documents/dev/game/JustADude/BL/obj/Debug/netcoreapp3.1/BL.csproj.AssemblyReference.cache
+/Users/wrongway/Documents/dev/game/JustADude/BL/obj/Debug/netcoreapp3.1/BL.GeneratedMSBuildEditorConfig.editorconfig
+/Users/wrongway/Documents/dev/game/JustADude/BL/obj/Debug/netcoreapp3.1/BL.AssemblyInfoInputs.cache
+/Users/wrongway/Documents/dev/game/JustADude/BL/obj/Debug/netcoreapp3.1/BL.AssemblyInfo.cs
+/Users/wrongway/Documents/dev/game/JustADude/BL/obj/Debug/netcoreapp3.1/BL.csproj.CoreCompileInputs.cache
+/Users/wrongway/Documents/dev/game/JustADude/BL/obj/Debug/netcoreapp3.1/BL.csproj.CopyComplete
+/Users/wrongway/Documents/dev/game/JustADude/BL/obj/Debug/netcoreapp3.1/BL.dll
+/Users/wrongway/Documents/dev/game/JustADude/BL/obj/Debug/netcoreapp3.1/BL.pdb
